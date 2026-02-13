@@ -1,0 +1,31 @@
+## Node
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+## Vite / Build
+dist
+dist-ssr
+.vite
+
+## Environment
+.env
+.env.*
+!.env.example
+
+## Editor
+.idea
+.vscode
+*.sw?
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Tooling / AI
+.cursor
+.ai-studio
+
