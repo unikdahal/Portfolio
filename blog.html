@@ -1,0 +1,696 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Writing — Unik Dahal</title>
+    <meta
+      name="description"
+      content="Deep-dives on systems engineering, distributed infrastructure, and the occasional hard problem from production."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* ── blog-page-only overrides ── */
+      .blog-index-hero {
+        padding: 80px 0 64px;
+        border-bottom: 1px solid var(--border);
+      }
+      .blog-index-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--mono);
+        font-size: 10.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+        margin-bottom: 28px;
+      }
+      .blog-index-tag-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--accent);
+        animation: blink 2.5s ease-in-out infinite;
+      }
+      .blog-index-title {
+        font-family: var(--serif);
+        font-size: clamp(48px, 9vw, 88px);
+        font-weight: 400;
+        line-height: 0.9;
+        letter-spacing: -0.04em;
+        color: var(--ink);
+        margin-bottom: 24px;
+      }
+      .blog-index-title em {
+        font-style: italic;
+        color: var(--muted);
+      }
+      .blog-index-sub {
+        font-size: 16px;
+        color: var(--muted);
+        line-height: 1.75;
+        max-width: 46ch;
+      }
+
+      /* grid of all posts */
+      .blog-index-body {
+        padding: 72px 0 96px;
+      }
+
+      /* featured top post */
+      .blog-index-featured {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 64px;
+        align-items: center;
+        padding: 48px 0;
+        border-bottom: 1px solid var(--border);
+        cursor: pointer;
+      }
+      @media (max-width: 640px) {
+        .blog-index-featured {
+          grid-template-columns: 1fr;
+          gap: 24px;
+          padding: 36px 0;
+        }
+      }
+      .blog-index-featured:hover .bif-title {
+        color: var(--accent);
+      }
+      .blog-index-featured:hover .bif-arrow {
+        transform: translateX(5px);
+      }
+      .bif-num {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--dim);
+        margin-bottom: 16px;
+        letter-spacing: 0.06em;
+      }
+      .bif-title {
+        font-family: var(--serif);
+        font-size: clamp(28px, 4.5vw, 42px);
+        font-weight: 400;
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+        color: var(--ink);
+        margin-bottom: 18px;
+        transition: color 0.2s;
+      }
+      .bif-excerpt {
+        font-size: 15px;
+        color: var(--muted);
+        line-height: 1.85;
+        margin-bottom: 24px;
+      }
+      .bif-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--accent);
+      }
+      .bif-arrow {
+        display: inline-block;
+        transition: transform 0.2s var(--fast);
+      }
+
+      .bif-meta-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .bif-meta-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--border);
+        font-size: 13px;
+      }
+      .bif-meta-row:last-child {
+        border-bottom: none;
+      }
+      .bif-meta-key {
+        font-family: var(--mono);
+        font-size: 9.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--dim);
+      }
+      .bif-meta-val {
+        font-size: 13px;
+        color: var(--ink-2);
+        font-weight: 500;
+      }
+      .bif-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .bif-tag {
+        font-family: var(--mono);
+        font-size: 9.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--accent);
+        background: var(--accent-dim);
+        padding: 3px 9px;
+        border-radius: 99px;
+      }
+      [data-theme="dark"] .bif-tag {
+        background: rgba(34, 197, 94, 0.1);
+      }
+
+      /* all-posts list */
+      .blog-all-label {
+        font-family: var(--mono);
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: var(--dim);
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 36px 0 32px;
+      }
+      .blog-all-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+
+      .blog-all-list {
+        display: flex;
+        flex-direction: column;
+      }
+      .blog-all-item {
+        display: grid;
+        grid-template-columns: 44px 1fr auto;
+        gap: 20px;
+        align-items: start;
+        padding: 28px 0;
+        border-bottom: 1px solid var(--border);
+        cursor: pointer;
+        transition: padding-left 0.2s var(--fast);
+      }
+      .blog-all-item:hover {
+        padding-left: 12px;
+      }
+      .blog-all-item:hover .bai-title {
+        color: var(--accent);
+      }
+      .blog-all-item:hover .bai-arrow {
+        transform: translateX(4px);
+        color: var(--accent);
+      }
+      @media (max-width: 580px) {
+        .blog-all-item {
+          grid-template-columns: 32px 1fr;
+          gap: 12px;
+        }
+        .bai-right {
+          display: none;
+        }
+      }
+
+      .bai-num {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--dim);
+        padding-top: 3px;
+      }
+      .bai-title {
+        font-size: 16px;
+        font-weight: 500;
+        color: var(--ink);
+        line-height: 1.45;
+        margin-bottom: 8px;
+        transition: color 0.15s;
+        letter-spacing: -0.01em;
+      }
+      .bai-excerpt {
+        font-size: 13.5px;
+        color: var(--muted);
+        line-height: 1.75;
+        max-width: 52ch;
+      }
+      .bai-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+        min-width: 130px;
+        padding-top: 3px;
+      }
+      .bai-tag {
+        font-family: var(--mono);
+        font-size: 9.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--accent);
+        background: var(--accent-dim);
+        padding: 3px 9px;
+        border-radius: 99px;
+      }
+      [data-theme="dark"] .bai-tag {
+        background: rgba(34, 197, 94, 0.1);
+      }
+      .bai-date {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--dim);
+      }
+      .bai-read {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--dim);
+      }
+      .bai-arrow {
+        font-size: 15px;
+        color: var(--dim);
+        margin-top: auto;
+        display: inline-block;
+        transition:
+          transform 0.2s var(--fast),
+          color 0.15s;
+      }
+
+      /* footer strip */
+      .blog-footer {
+        padding: 24px 0;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: var(--mono);
+        font-size: 11.5px;
+        color: var(--dim);
+      }
+      .blog-footer a {
+        color: var(--muted);
+        transition: color 0.15s;
+      }
+      .blog-footer a:hover {
+        color: var(--ink);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script
+      src="https://unpkg.com/react@18.3.1/umd/react.development.js"
+      integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"
+      integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"
+      integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y"
+      crossorigin="anonymous"
+    ></script>
+
+    <script type="text/babel" src="app/data.jsx"></script>
+    <script type="text/babel">
+      /* global React, ReactDOM, DATA */
+      const { useState, useEffect } = React;
+
+      /* ── theme init ── */
+      function useSavedTheme() {
+        const [theme, setThemeState] = useState(() => {
+          try {
+            return localStorage.getItem("ud-theme") || "light";
+          } catch {
+            return "light";
+          }
+        });
+        const setTheme = (t) => {
+          document.documentElement.setAttribute("data-theme", t);
+          setThemeState(t);
+          try {
+            localStorage.setItem("ud-theme", t);
+          } catch {}
+        };
+        useEffect(() => {
+          setTheme(theme);
+        }, []);
+        return [theme, setTheme];
+      }
+
+      /* ── post render blocks ── */
+      function renderBlock(block, i) {
+        switch (block.type) {
+          case "h2":
+            return (
+              <h2 className="post-h2" key={i}>
+                {block.text}
+              </h2>
+            );
+          case "h3":
+            return (
+              <h3 className="post-h3" key={i}>
+                {block.text}
+              </h3>
+            );
+          case "p":
+            return (
+              <p className="post-p" key={i}>
+                {block.text}
+              </p>
+            );
+          case "quote":
+            return (
+              <blockquote className="post-quote" key={i}>
+                {block.text}
+              </blockquote>
+            );
+          case "ul":
+            return (
+              <ul className="post-ul" key={i}>
+                {block.items.map((item, j) => (
+                  <li key={j}>{item}</li>
+                ))}
+              </ul>
+            );
+          case "code":
+            return (
+              <div className="post-code-wrap" key={i}>
+                {block.lang && (
+                  <div className="post-code-lang">{block.lang}</div>
+                )}
+                <pre className="post-code">
+                  <code>{block.text}</code>
+                </pre>
+              </div>
+            );
+          default:
+            return null;
+        }
+      }
+
+      /* ── nav ── */
+      function BlogNav({ theme, onToggle, activePost, onClose }) {
+        return (
+          <nav>
+            <div className="nav-inner">
+              <a href="index.html" className="nav-brand">
+                Unik Dahal
+              </a>
+              <div className="nav-links">
+                {activePost ? (
+                  <button className="nav-back" onClick={onClose}>
+                    ← All posts
+                  </button>
+                ) : (
+                  <a href="index.html#blog" className="active">
+                    Writing
+                  </a>
+                )}
+                <span className="nav-theme-wrap">
+                  <button
+                    className="nav-theme"
+                    onClick={() =>
+                      onToggle(theme === "dark" ? "light" : "dark")
+                    }
+                    aria-label="Toggle theme"
+                  >
+                    {theme === "dark" ? "☀" : "◐"}
+                  </button>
+                </span>
+              </div>
+            </div>
+          </nav>
+        );
+      }
+
+      /* ── blog index ── */
+      function BlogIndex({ posts, onOpen }) {
+        if (!posts.length) {
+          return (
+            <div>
+              <div className="blog-index-hero">
+                <div className="wrap">
+                  <div className="blog-index-tag">
+                    <span className="blog-index-tag-dot"></span>
+                    Writing
+                  </div>
+                  <h1 className="blog-index-title">
+                    Nothing
+                    <br />
+                    <em>published yet.</em>
+                  </h1>
+                  <p className="blog-index-sub">
+                    The blog is driven from shared content data. When posts are
+                    added, this page fills itself automatically.
+                  </p>
+                </div>
+              </div>
+
+              <div className="blog-index-body">
+                <div className="wrap">
+                  <div
+                    className="blog-index-featured"
+                    style={{ cursor: "default" }}
+                  >
+                    <div className="bif-left">
+                      <div className="bif-num">Empty state</div>
+                      <h2 className="bif-title">No articles yet.</h2>
+                      <p className="bif-excerpt">
+                        Add a post object in{" "}
+                        <span className="bif-tag">app/data.jsx</span> and the
+                        blog section will appear here without any page changes.
+                      </p>
+                      <div className="bif-cta">
+                        Back to portfolio <span className="bif-arrow">→</span>
+                      </div>
+                    </div>
+                    <div className="bif-right">
+                      <div className="bif-meta-stack">
+                        <div className="bif-meta-row">
+                          <span className="bif-meta-key">Status</span>
+                          <span className="bif-meta-val">
+                            Hidden until content exists
+                          </span>
+                        </div>
+                        <div className="bif-meta-row">
+                          <span className="bif-meta-key">Mode</span>
+                          <span className="bif-meta-val">Dynamic</span>
+                        </div>
+                        <div className="bif-meta-row">
+                          <span className="bif-meta-key">Back</span>
+                          <span className="bif-meta-val">
+                            <a href="index.html">Portfolio</a>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="blog-footer" style={{ marginTop: "64px" }}>
+                    <a href="index.html">← Back to portfolio</a>
+                    <span>0 posts</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        const featured = posts[0];
+        const rest = posts.slice(1);
+
+        return (
+          <div>
+            <div className="blog-index-hero">
+              <div className="wrap">
+                <div className="blog-index-tag">
+                  <span className="blog-index-tag-dot"></span>
+                  Writing
+                </div>
+                <h1 className="blog-index-title">
+                  Things I<br />
+                  <em>figured out.</em>
+                </h1>
+                <p className="blog-index-sub">
+                  Deep-dives on systems engineering, distributed infrastructure,
+                  and the occasional hard problem I ran into building things in
+                  production.
+                </p>
+              </div>
+            </div>
+
+            <div className="blog-index-body">
+              <div className="wrap">
+                {featured && (
+                  <div
+                    className="blog-index-featured"
+                    onClick={() => onOpen(featured)}
+                  >
+                    <div className="bif-left">
+                      <div className="bif-num">№001 — Featured</div>
+                      <h2 className="bif-title">{featured.title}</h2>
+                      <p className="bif-excerpt">{featured.excerpt}</p>
+                      <div className="bif-cta">
+                        Read post <span className="bif-arrow">→</span>
+                      </div>
+                    </div>
+                    <div className="bif-right">
+                      <div className="bif-meta-stack">
+                        <div className="bif-meta-row">
+                          <span className="bif-meta-key">Category</span>
+                          <span className="bif-badge">
+                            <span className="bif-tag">{featured.tag}</span>
+                          </span>
+                        </div>
+                        <div className="bif-meta-row">
+                          <span className="bif-meta-key">Published</span>
+                          <span className="bif-meta-val">{featured.date}</span>
+                        </div>
+                        <div className="bif-meta-row">
+                          <span className="bif-meta-key">Read time</span>
+                          <span className="bif-meta-val">
+                            {featured.readTime}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {rest.length > 0 && (
+                  <div className="blog-all-label">All posts</div>
+                )}
+
+                <div className="blog-all-list">
+                  {rest.map((post, i) => (
+                    <div
+                      className="blog-all-item"
+                      key={post.id}
+                      onClick={() => onOpen(post)}
+                    >
+                      <div className="bai-num">
+                        №{String(i + 2).padStart(3, "0")}
+                      </div>
+                      <div>
+                        <div className="bai-title">{post.title}</div>
+                        <div className="bai-excerpt">{post.excerpt}</div>
+                      </div>
+                      <div className="bai-right">
+                        <div className="bai-tag">{post.tag}</div>
+                        <div className="bai-date">{post.date}</div>
+                        <div className="bai-read">{post.readTime}</div>
+                        <div className="bai-arrow">→</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="blog-footer" style={{ marginTop: "64px" }}>
+                  <a href="index.html">← Back to portfolio</a>
+                  <span>
+                    {posts.length} post{posts.length !== 1 ? "s" : ""}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      /* ── post reader ── */
+      function BlogPostReader({ post, onClose }) {
+        useEffect(() => {
+          window.scrollTo(0, 0);
+        }, [post]);
+        return (
+          <div className="post-page">
+            <div className="post-hero">
+              <div className="wrap">
+                <div className="post-meta-top">
+                  <span className="post-tag">{post.tag}</span>
+                  <span className="post-date">{post.date}</span>
+                  <span className="post-read">{post.readTime}</span>
+                </div>
+                <h1 className="post-title">{post.title}</h1>
+                <p className="post-excerpt">{post.excerpt}</p>
+              </div>
+            </div>
+            <div className="post-body">
+              <div className="post-content wrap">
+                {post.content.map((block, i) => renderBlock(block, i))}
+                <div className="post-end">
+                  <button className="post-end-back" onClick={onClose}>
+                    ← All posts
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      /* ── app ── */
+      function BlogApp() {
+        const [theme, setTheme] = useSavedTheme();
+        const [activePost, setActivePost] = useState(null);
+
+        const posts = DATA.posts || [];
+
+        const openPost = (post) => {
+          setActivePost(post);
+          window.scrollTo({ top: 0 });
+        };
+        const closePost = () => {
+          setActivePost(null);
+          window.scrollTo({ top: 0 });
+        };
+
+        useEffect(() => {
+          const fn = (e) => {
+            if (e.key === "Escape" && activePost) closePost();
+          };
+          window.addEventListener("keydown", fn);
+          return () => window.removeEventListener("keydown", fn);
+        }, [activePost]);
+
+        return (
+          <>
+            <BlogNav
+              theme={theme}
+              onToggle={setTheme}
+              activePost={activePost}
+              onClose={closePost}
+            />
+            <main>
+              {activePost ? (
+                <BlogPostReader post={activePost} onClose={closePost} />
+              ) : (
+                <BlogIndex posts={posts} onOpen={openPost} />
+              )}
+            </main>
+          </>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<BlogApp />);
+    </script>
+  </body>
+</html>

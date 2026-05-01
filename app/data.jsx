@@ -1,0 +1,235 @@
+/* global React */
+// Data layer — all content
+
+const DATA = {
+  name: "Unik Dahal",
+  role: "Software Development Engineer",
+  location: "Hyderabad, India",
+  origin: "Nepal",
+  tz: "Asia/Kolkata",
+  email: "unikdahal03@gmail.com",
+  tagline:
+    "I build the infrastructure that makes data move fast — distributed query engines, event-driven pipelines, and backends that hold under pressure.",
+  bio: [
+    "I'm a backend engineer at Highradius on the G4 Data Platform team. Day-to-day that means migrating analytical query layers off Snowflake onto Spark + Iceberg, replacing Thrift with Arrow Flight SQL to cut 1.5 seconds per query, and shipping orchestration engines that dropped release cycle time by 83%.",
+    "Outside work, I'm building a production Redis clone in Java 25 from scratch: Netty NIO event loop, full RESP parser, MULTI/EXEC transactions, PSYNC2 replication with deterministic command canonicalization, Redis Streams, and 599 tests across unit, integration, and replication suites. I'm also engineering the full stack for Sutine, a clothing label I co-own, with a Spring Boot 3 backend, JWT auth, RBAC, and a React + TypeScript storefront and admin panel.",
+    "I care about systems that behave correctly under load, APIs that don't surprise callers, and code that doesn't require archaeology to understand.",
+  ],
+  stats: [
+    { n: "83%", l: "Release cycle reduction · Highradius" },
+    { n: "500 GB+", l: "Kafka pipeline throughput · day" },
+    { n: "−1.5s", l: "Per-query latency · Arrow Flight SQL" },
+  ],
+  experience: [
+    {
+      when: "May 2024 — Present",
+      where: "Highradius Corporation",
+      loc: "Hyderabad, India",
+      role: "Software Development Engineer I",
+      note: "Previously: Product Engineering Intern · Jan 2024",
+      bullets: [
+        "Migrated the analytical query layer from Snowflake to Spark 3.5, Iceberg, and Kyuubi, achieving sub-second latency on hot datasets",
+        "Replaced ThriftServer with Arrow Flight SQL and ADBC, cutting 1.5 seconds per query, shrinking the Docker image by 38%, and reducing EKS cold-start time by 2 minutes",
+        "Built the Livecube Import/Export engine: 7-microservice orchestration with atomic environment replication that cut release cycle time by 83%",
+        "Designed SAGA orchestration across 5+ microservices with compensating rollback chains, reducing production incidents by 70%",
+        "Built a Kafka pipeline processing 500 GB+ of events per day into S3, fully decoupled from the critical request path",
+        "Resolved a production InnoDB gap-locking deadlock through index restructuring, improving write throughput by 40%",
+      ],
+      stack: [
+        "Java 21",
+        "Spring Boot 3",
+        "Apache Kafka",
+        "Apache Spark 3.5",
+        "Apache Iceberg",
+        "Kyuubi",
+        "Arrow Flight SQL",
+        "ADBC",
+        "Kubernetes",
+        "MySQL",
+        "AWS S3",
+      ],
+    },
+    {
+      when: "Jan 2024 — Apr 2024",
+      where: "ImmiHealth",
+      loc: "Michigan, USA (Remote)",
+      role: "Backend Engineer",
+      note: "Remote",
+      bullets: [
+        "Built the backend for a HIPAA-compliant telemedicine platform serving 1k+ users",
+        "End-to-end encryption and role-based access control across all clinical endpoints",
+        "Designed a UTC-normalized scheduling schema that eliminated double-booking and timezone drift at the database layer",
+      ],
+      stack: ["Java", "Spring Boot", "PostgreSQL", "RBAC", "HIPAA"],
+    },
+    {
+      when: "2021 — 2025",
+      where: "KIIT University",
+      loc: "Bhubaneswar, India",
+      role: "B.Tech · Computer Science & Engineering",
+      note: "",
+      bullets: ["Minor: Financial Economics"],
+      stack: ["Algorithms", "Distributed Systems", "OS", "DBMS", "Networks"],
+    },
+  ],
+  projects: [
+    {
+      id: "redis",
+      num: "01",
+      kicker: "Systems / Java 25 / 2026",
+      name: "Redis, rebuilt.",
+      tag: "Production-grade Redis-compatible server",
+      desc: "A Redis-compatible server written from scratch in Java 25 with Netty: async NIO event loop, zero-copy buffer management, and a full RESP parser compatible with redis-cli, jedis, and lettuce. Supports MULTI/EXEC/DISCARD transactions, command pipelining, Redis Streams (XADD/XRANGE/XREAD), and blocking reads via BLPOP. Master-Replica replication runs on PSYNC2 with deterministic command canonicalization (relative TTLs are rewritten to absolute timestamps before propagation), a lock-free ring buffer backlog, and a circuit breaker for slow replicas. RDB snapshots handle full resync. 599 tests across unit, integration, and replication suites with CI on GitHub Actions.",
+      kv: [
+        {
+          k: "Protocol",
+          v: "Full RESP · redis-cli / jedis / lettuce compatible",
+        },
+        { k: "Transactions", v: "MULTI/EXEC/DISCARD · pipelining" },
+        {
+          k: "Replication",
+          v: "PSYNC2 · deterministic canonicalization · circuit breaker",
+        },
+        {
+          k: "Persistence",
+          v: "RDB snapshots · bounded backlog · auto eviction",
+        },
+        { k: "Tests", v: "599 · unit + integration + replication" },
+      ],
+      stack: [
+        "Java 25",
+        "Netty NIO",
+        "RESP Protocol",
+        "Redis Streams",
+        "PSYNC2",
+        "RDB",
+        "JUnit 5",
+        "GitHub Actions",
+      ],
+      href: "https://github.com/unikdahal/redis-java",
+      size: "large",
+    },
+    {
+      id: "sutine",
+      num: "02",
+      kicker: "Commerce / Spring Boot / 2025 to Present",
+      name: "Sutine",
+      tag: "Full-stack e-commerce platform",
+      desc: "End-to-end e-commerce platform for a clothing label I co-own. Spring Boot 3 backend with JWT auth and RBAC, a React + TypeScript storefront, a separate React + TypeScript admin panel for full product and order management, direct Cloudflare R2 multipart upload for images, and a complete CI/CD pipeline deployed on Oracle Cloud with MySQL HeatWave.",
+      kv: [
+        { k: "Backend", v: "Spring Boot 3 · JWT · RBAC" },
+        { k: "Frontend", v: "React + TypeScript · storefront and admin" },
+        { k: "Storage", v: "Cloudflare R2 · multipart upload" },
+        { k: "Infra", v: "Oracle Cloud · GitHub Actions CI/CD" },
+      ],
+      stack: [
+        "Spring Boot 3",
+        "React",
+        "TypeScript",
+        "MySQL HeatWave",
+        "Cloudflare R2",
+        "JWT",
+        "Oracle Cloud",
+      ],
+      href: "https://sutine.com",
+      size: "large",
+    },
+    {
+      id: "immihealth",
+      num: "03",
+      kicker: "Healthcare / Backend / 2024",
+      name: "ImmiHealth",
+      tag: "HIPAA-compliant telemedicine backend",
+      desc: "Backend for a telemedicine platform serving 1k+ users with RBAC across all clinical endpoints, end-to-end encryption, and a UTC-normalized scheduling schema that eliminated double-booking and timezone drift at the database layer.",
+      kv: [
+        { k: "Users", v: "1k+ served" },
+        { k: "Compliance", v: "HIPAA" },
+        { k: "Auth", v: "RBAC · E2E encryption" },
+      ],
+      stack: ["Java", "Spring Boot", "PostgreSQL", "HIPAA"],
+      href: "#",
+      size: "small",
+    },
+  ],
+  skills: [
+    {
+      h: "Languages",
+      n: "L1",
+      items: [
+        { k: "Java 25", v: 96, y: "4y" },
+        { k: "SQL", v: 90, y: "4y" },
+        { k: "Python", v: 78, y: "3y" },
+        { k: "TypeScript", v: 75, y: "2y" },
+        { k: "C++", v: 65, y: "2y" },
+      ],
+    },
+    {
+      h: "Backend & Systems",
+      n: "L2",
+      items: [
+        { k: "Spring Boot 3", v: 95, y: "2y" },
+        { k: "Apache Kafka", v: 88, y: "1y" },
+        { k: "Netty / NIO", v: 84, y: "1y" },
+        { k: "Microservices", v: 90, y: "2y" },
+        { k: "REST / gRPC", v: 88, y: "3y" },
+        { k: "SAGA / DDD", v: 82, y: "1y" },
+      ],
+    },
+    {
+      h: "Data Platform",
+      n: "L3",
+      items: [
+        { k: "Apache Spark 3.5", v: 85, y: "1y" },
+        { k: "Apache Iceberg", v: 82, y: "1y" },
+        { k: "Arrow Flight SQL", v: 80, y: "1y" },
+        { k: "MySQL / PostgreSQL", v: 90, y: "3y" },
+        { k: "Redis", v: 92, y: "2y" },
+        { k: "AWS S3 / CF R2", v: 80, y: "2y" },
+      ],
+    },
+    {
+      h: "Infra & DevOps",
+      n: "L4",
+      items: [
+        { k: "Docker", v: 88, y: "3y" },
+        { k: "Kubernetes", v: 78, y: "1y" },
+        { k: "AWS (SQS / EC2 / Lambda)", v: 76, y: "2y" },
+        { k: "GitLab CI / GitHub Actions", v: 82, y: "2y" },
+        { k: "JUnit 5 / TDD", v: 88, y: "3y" },
+        { k: "Grafana", v: 72, y: "1y" },
+      ],
+    },
+  ],
+  posts: [],
+  contact: {
+    email: "unikdahal03@gmail.com",
+    links: [
+      {
+        k: "GitHub",
+        v: "github.com/unikdahal",
+        href: "https://github.com/unikdahal",
+      },
+      {
+        k: "LinkedIn",
+        v: "linkedin.com/in/unikdahal",
+        href: "https://www.linkedin.com/in/unikdahal",
+      },
+      {
+        k: "Website",
+        v: "unikdahal.com.np",
+        href: "https://www.unikdahal.com.np",
+      },
+      { k: "Sutine", v: "sutine.com", href: "https://sutine.com" },
+    ],
+  },
+};
+
+const NAV = [
+  { id: "hero", n: "00", l: "Index" },
+  { id: "experience", n: "01", l: "Experience" },
+  { id: "projects", n: "02", l: "Work" },
+  { id: "skills", n: "03", l: "Stack" },
+  { id: "contact", n: "04", l: "Contact" },
+];
+
+Object.assign(window, { DATA, NAV });
