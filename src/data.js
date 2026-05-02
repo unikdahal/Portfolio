@@ -1,7 +1,4 @@
-/* global React */
-// Data layer — all content
-
-const DATA = {
+export const DATA = {
   name: "Unik Dahal",
   role: "Software Development Engineer",
   location: "Hyderabad, India",
@@ -36,17 +33,9 @@ const DATA = {
         "Resolved a production InnoDB gap-locking deadlock through index restructuring, improving write throughput by 40%",
       ],
       stack: [
-        "Java 21",
-        "Spring Boot 3",
-        "Apache Kafka",
-        "Apache Spark 3.5",
-        "Apache Iceberg",
-        "Kyuubi",
-        "Arrow Flight SQL",
-        "ADBC",
-        "Kubernetes",
-        "MySQL",
-        "AWS S3",
+        "Java 21", "Spring Boot 3", "Apache Kafka", "Apache Spark 3.5",
+        "Apache Iceberg", "Kyuubi", "Arrow Flight SQL", "ADBC",
+        "Kubernetes", "MySQL", "AWS S3",
       ],
     },
     {
@@ -81,31 +70,13 @@ const DATA = {
       tag: "Production-grade Redis-compatible server",
       desc: "A Redis-compatible server written from scratch in Java 25 with Netty: async NIO event loop, zero-copy buffer management, and a full RESP parser compatible with redis-cli, jedis, and lettuce. Supports MULTI/EXEC/DISCARD transactions, command pipelining, Redis Streams (XADD/XRANGE/XREAD), and blocking reads via BLPOP. Master-Replica replication runs on PSYNC2 with deterministic command canonicalization (relative TTLs are rewritten to absolute timestamps before propagation), a lock-free ring buffer backlog, and a circuit breaker for slow replicas. RDB snapshots handle full resync. 599 tests across unit, integration, and replication suites with CI on GitHub Actions.",
       kv: [
-        {
-          k: "Protocol",
-          v: "Full RESP · redis-cli / jedis / lettuce compatible",
-        },
+        { k: "Protocol", v: "Full RESP · redis-cli / jedis / lettuce compatible" },
         { k: "Transactions", v: "MULTI/EXEC/DISCARD · pipelining" },
-        {
-          k: "Replication",
-          v: "PSYNC2 · deterministic canonicalization · circuit breaker",
-        },
-        {
-          k: "Persistence",
-          v: "RDB snapshots · bounded backlog · auto eviction",
-        },
+        { k: "Replication", v: "PSYNC2 · deterministic canonicalization · circuit breaker" },
+        { k: "Persistence", v: "RDB snapshots · bounded backlog · auto eviction" },
         { k: "Tests", v: "599 · unit + integration + replication" },
       ],
-      stack: [
-        "Java 25",
-        "Netty NIO",
-        "RESP Protocol",
-        "Redis Streams",
-        "PSYNC2",
-        "RDB",
-        "JUnit 5",
-        "GitHub Actions",
-      ],
+      stack: ["Java 25", "Netty NIO", "RESP Protocol", "Redis Streams", "PSYNC2", "RDB", "JUnit 5", "GitHub Actions"],
       href: "https://github.com/unikdahal/redis-java",
       size: "large",
     },
@@ -122,15 +93,7 @@ const DATA = {
         { k: "Storage", v: "Cloudflare R2 · multipart upload" },
         { k: "Infra", v: "Oracle Cloud · GitHub Actions CI/CD" },
       ],
-      stack: [
-        "Spring Boot 3",
-        "React",
-        "TypeScript",
-        "MySQL HeatWave",
-        "Cloudflare R2",
-        "JWT",
-        "Oracle Cloud",
-      ],
+      stack: ["Spring Boot 3", "React", "TypeScript", "MySQL HeatWave", "Cloudflare R2", "JWT", "Oracle Cloud"],
       href: "https://sutine.com",
       size: "large",
     },
@@ -153,8 +116,7 @@ const DATA = {
   ],
   skills: [
     {
-      h: "Languages",
-      n: "L1",
+      h: "Languages", n: "L1",
       items: [
         { k: "Java 25", v: 96, y: "4y" },
         { k: "SQL", v: 90, y: "4y" },
@@ -164,8 +126,7 @@ const DATA = {
       ],
     },
     {
-      h: "Backend & Systems",
-      n: "L2",
+      h: "Backend & Systems", n: "L2",
       items: [
         { k: "Spring Boot 3", v: 95, y: "2y" },
         { k: "Apache Kafka", v: 88, y: "1y" },
@@ -176,8 +137,7 @@ const DATA = {
       ],
     },
     {
-      h: "Data Platform",
-      n: "L3",
+      h: "Data Platform", n: "L3",
       items: [
         { k: "Apache Spark 3.5", v: 85, y: "1y" },
         { k: "Apache Iceberg", v: 82, y: "1y" },
@@ -188,8 +148,7 @@ const DATA = {
       ],
     },
     {
-      h: "Infra & DevOps",
-      n: "L4",
+      h: "Infra & DevOps", n: "L4",
       items: [
         { k: "Docker", v: 88, y: "3y" },
         { k: "Kubernetes", v: 78, y: "1y" },
@@ -200,36 +159,13 @@ const DATA = {
       ],
     },
   ],
-  posts: [],
   contact: {
     email: "unikdahal03@gmail.com",
     links: [
-      {
-        k: "GitHub",
-        v: "github.com/unikdahal",
-        href: "https://github.com/unikdahal",
-      },
-      {
-        k: "LinkedIn",
-        v: "linkedin.com/in/unikdahal",
-        href: "https://www.linkedin.com/in/unikdahal",
-      },
-      {
-        k: "Website",
-        v: "unikdahal.com.np",
-        href: "https://www.unikdahal.com.np",
-      },
+      { k: "GitHub", v: "github.com/unikdahal", href: "https://github.com/unikdahal" },
+      { k: "LinkedIn", v: "linkedin.com/in/unikdahal", href: "https://www.linkedin.com/in/unikdahal" },
+      { k: "Website", v: "unikdahal.com.np", href: "https://www.unikdahal.com.np" },
       { k: "Sutine", v: "sutine.com", href: "https://sutine.com" },
     ],
   },
-};
-
-const NAV = [
-  { id: "hero", n: "00", l: "Index" },
-  { id: "experience", n: "01", l: "Experience" },
-  { id: "projects", n: "02", l: "Work" },
-  { id: "skills", n: "03", l: "Stack" },
-  { id: "contact", n: "04", l: "Contact" },
-];
-
-Object.assign(window, { DATA, NAV });
+}
