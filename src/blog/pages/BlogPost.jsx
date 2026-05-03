@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { useReveal } from '../../hooks'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { vscDarkPlus, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
@@ -284,44 +284,6 @@ function TableOfContents({ headings, active }) {
   )
 }
 
-function GiscusComments({ theme }) {
-  const ref = useRef(null)
-  const loaded = useRef(false)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el || loaded.current) return
-    loaded.current = true
-    const s = document.createElement('script')
-    s.src = 'https://giscus.app/client.js'
-    s.dataset.repo = 'unikdahal/Portfolio'
-    s.dataset.repoId = 'R_kgDOJCt_kQ'
-    s.dataset.category = 'General'
-    s.dataset.categoryId = 'DIC_kwDOJCt_kc4C8PIO'
-    s.dataset.mapping = 'pathname'
-    s.dataset.strict = '0'
-    s.dataset.reactionsEnabled = '1'
-    s.dataset.emitMetadata = '0'
-    s.dataset.inputPosition = 'top'
-    s.dataset.theme = theme === 'dark' ? 'dark' : 'light'
-    s.dataset.lang = 'en'
-    s.dataset.loading = 'lazy'
-    s.crossOrigin = 'anonymous'
-    s.async = true
-    el.appendChild(s)
-  }, [])
-
-  useEffect(() => {
-    const iframe = document.querySelector('iframe.giscus-frame')
-    if (!iframe) return
-    iframe.contentWindow.postMessage(
-      { giscus: { setConfig: { theme: theme === 'dark' ? 'dark' : 'light' } } },
-      'https://giscus.app'
-    )
-  }, [theme])
-
-  return <div ref={ref} />
-}
 
 function FloatingReadTime({ minutes, progress }) {
   const visible = minutes !== null && progress > 5 && progress < 95
@@ -403,7 +365,6 @@ export default function BlogPost() {
   const [PostComponent, setPostComponent] = useState(null)
   const [meta, setMeta] = useState(null)
   const progress = useReadingProgress()
-  const theme = useDocTheme()
   const headings = useTOC(PostComponent)
   const activeHeading = useActiveHeading(headings)
   const wordCount = useWordCount(PostComponent)
@@ -549,11 +510,6 @@ export default function BlogPost() {
             ) : <div />}
           </div>
         )}
-
-        <div className="bp-comments">
-          <div className="bp-comments-label">Discussion</div>
-          <GiscusComments theme={theme} />
-        </div>
 
         <div className="bp-end">
           <Link to="/blog" className="bp-back-link">← Back to Writing</Link>

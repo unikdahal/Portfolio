@@ -1179,17 +1179,6 @@ footer {
 .bp-float-time.visible { opacity: 1; transform: translateY(0); }
 [data-theme="dark"] .bp-float-time { box-shadow: 0 2px 20px rgba(0,0,0,.4); }
 
-/* ══════════════════════════════════════
-   GISCUS COMMENTS
-══════════════════════════════════════ */
-.bp-comments {
-  padding-top: 8px;
-}
-.bp-comments-label {
-  font-family: var(--mono); font-size: 9px;
-  text-transform: uppercase; letter-spacing: .16em;
-  color: var(--dim); margin-bottom: 24px;
-}
 
 /* ══════════════════════════════════════
    MERMAID DIAGRAMS
