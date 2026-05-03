@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import Fuse from 'fuse.js'
 import { useReveal } from '../../hooks'
 
 const postModules = import.meta.glob('../../content/blog/*.mdx', { eager: true })
@@ -10,6 +11,12 @@ const ALL_POSTS = Object.entries(postModules)
     ...(mod.frontmatter || {}),
   }))
   .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
+
+const fuseIndex = new Fuse(ALL_POSTS, {
+  keys: ['title', 'excerpt', 'category', 'series'],
+  threshold: 0.35,
+  minMatchCharLength: 2,
+})
 
 function fmt(dateStr) {
   if (!dateStr) return ''
@@ -29,16 +36,11 @@ export default function BlogIndex() {
   }, [])
 
   const visible = useMemo(() => {
-    let p = ALL_POSTS
-    if (cat !== 'All') p = p.filter(x => x.category === cat)
-    if (query) {
-      const q = query.toLowerCase()
-      p = p.filter(x =>
-        [x.title, x.excerpt, x.category, x.tag, x.series]
-          .some(f => f?.toLowerCase().includes(q))
-      )
+    if (!query.trim()) {
+      return cat === 'All' ? ALL_POSTS : ALL_POSTS.filter(x => x.category === cat)
     }
-    return p
+    const results = fuseIndex.search(query).map(r => r.item)
+    return cat === 'All' ? results : results.filter(x => x.category === cat)
   }, [query, cat])
 
   const { seriesMap, standalone } = useMemo(() => {

@@ -5,7 +5,7 @@ import remarkFrontmatter from 'remark-frontmatter'
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter'
 import remarkGfm from 'remark-gfm'
 
-function rehypeCodeTitle() {
+function rehypeCodeMeta() {
   return (tree) => {
     walk(tree)
     function walk(node) {
@@ -14,8 +14,10 @@ function rehypeCodeTitle() {
         if (code?.type === 'element' && code.tagName === 'code') {
           const meta = code.properties?.metastring || ''
           if (meta) {
-            const m = meta.match(/title="([^"]+)"/)
-            if (m) code.properties.title = m[1]
+            const tm = meta.match(/title="([^"]+)"/)
+            if (tm) code.properties.title = tm[1]
+            const hm = meta.match(/\{([\d,\-\s]+)\}/)
+            if (hm) code.properties['data-highlight'] = hm[1]
           }
         }
       }
@@ -28,8 +30,11 @@ export default defineConfig({
   plugins: [
     mdx({
       remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter, remarkGfm],
-      rehypePlugins: [rehypeCodeTitle],
+      rehypePlugins: [rehypeCodeMeta],
     }),
     react(),
   ],
+  optimizeDeps: {
+    exclude: ['mermaid'],
+  },
 })

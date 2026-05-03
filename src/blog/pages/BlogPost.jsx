@@ -1,9 +1,11 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useReveal } from '../../hooks'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { vscDarkPlus, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
-import { Copy, Check } from 'lucide-react'
+import { Copy, Check, Link2 } from 'lucide-react'
+import Giscus from '@giscus/react'
+import { Helmet } from 'react-helmet-async'
 
 const postModules = import.meta.glob('../../content/blog/*.mdx')
 const postModulesEager = import.meta.glob('../../content/blog/*.mdx', { eager: true })
@@ -47,6 +49,62 @@ function useReadingProgress() {
   return pct
 }
 
+function useTOC(PostComponent) {
+  const [headings, setHeadings] = useState([])
+  useEffect(() => {
+    if (!PostComponent) return
+    const timer = setTimeout(() => {
+      const prose = document.querySelector('.prose')
+      if (!prose) return
+      const els = prose.querySelectorAll('h2[id], h3[id]')
+      setHeadings(Array.from(els).map(el => ({
+        id: el.id,
+        text: el.textContent.replace(/#\s*$/, '').trim(),
+        level: el.tagName === 'H2' ? 2 : 3,
+      })))
+    }, 150)
+    return () => clearTimeout(timer)
+  }, [PostComponent])
+  return headings
+}
+
+function useActiveHeading(headings) {
+  const [active, setActive] = useState('')
+  useEffect(() => {
+    if (!headings.length) return
+    const obs = new IntersectionObserver(
+      entries => {
+        const visible = entries
+          .filter(e => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
+        if (visible.length) setActive(visible[0].target.id)
+      },
+      { rootMargin: '-10% 0px -80% 0px', threshold: 0 }
+    )
+    headings.forEach(h => {
+      const el = document.getElementById(h.id)
+      if (el) obs.observe(el)
+    })
+    return () => obs.disconnect()
+  }, [headings])
+  return active
+}
+
+function useWordCount(PostComponent) {
+  const [words, setWords] = useState(0)
+  useEffect(() => {
+    if (!PostComponent) return
+    const timer = setTimeout(() => {
+      const prose = document.querySelector('.prose')
+      if (!prose) return
+      const text = prose.textContent || ''
+      setWords(text.trim().split(/\s+/).filter(Boolean).length)
+    }, 200)
+    return () => clearTimeout(timer)
+  }, [PostComponent])
+  return words
+}
+
 function extractText(node) {
   if (typeof node === 'string') return node
   if (Array.isArray(node)) return node.map(extractText).join('')
@@ -56,6 +114,21 @@ function extractText(node) {
 
 function toSlug(text) {
   return text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').trim()
+}
+
+function parseHighlightLines(str) {
+  if (!str) return new Set()
+  const set = new Set()
+  String(str).split(',').forEach(part => {
+    part = part.trim()
+    if (part.includes('-')) {
+      const [a, b] = part.split('-').map(Number)
+      for (let i = a; i <= b; i++) set.add(i)
+    } else if (part) {
+      set.add(Number(part))
+    }
+  })
+  return set
 }
 
 function AnchoredH2({ children, ...p }) {
@@ -98,11 +171,42 @@ function Callout({ type = 'note', title, children }) {
   )
 }
 
-function CodeBlock({ children, className, title }) {
+function MermaidBlock({ children }) {
+  const theme = useDocTheme()
+  const [svg, setSvg] = useState('')
+  const [loading, setLoading] = useState(true)
+  const idRef = useRef(`mermaid-${Math.random().toString(36).slice(2)}`)
+
+  useEffect(() => {
+    const code = String(children).trim()
+    setLoading(true)
+    import('mermaid').then(m => {
+      const mermaid = m.default
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: theme === 'dark' ? 'dark' : 'neutral',
+        securityLevel: 'loose',
+      })
+      idRef.current = `mermaid-${Math.random().toString(36).slice(2)}`
+      mermaid.render(idRef.current, code)
+        .then(({ svg: s }) => { setSvg(s); setLoading(false) })
+        .catch(() => setLoading(false))
+    })
+  }, [children, theme])
+
+  if (loading) return <div className="mdx-mermaid-loading">Rendering diagram...</div>
+  return <div className="mdx-mermaid" dangerouslySetInnerHTML={{ __html: svg }} />
+}
+
+function CodeBlock({ children, className, title, 'data-highlight': highlight }) {
   const [copied, setCopied] = useState(false)
   const theme = useDocTheme()
   const language = className?.replace('language-', '') || 'text'
   const code = String(children).replace(/\n$/, '')
+
+  if (language === 'mermaid') return <MermaidBlock>{code}</MermaidBlock>
+
+  const highlightSet = parseHighlightLines(highlight)
 
   const copy = () => {
     navigator.clipboard.writeText(code)
@@ -125,6 +229,23 @@ function CodeBlock({ children, className, title }) {
         language={language}
         style={theme === 'dark' ? vscDarkPlus : oneLight}
         PreTag="div"
+        wrapLines={highlightSet.size > 0}
+        lineProps={highlightSet.size > 0
+          ? ln => {
+              const hl = highlightSet.has(ln)
+              return {
+                style: {
+                  display: 'block',
+                  backgroundColor: hl
+                    ? (theme === 'dark' ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.04)')
+                    : 'transparent',
+                  borderLeft: hl ? '3px solid var(--accent)' : '3px solid transparent',
+                  paddingLeft: '6px',
+                  marginLeft: '-9px',
+                },
+              }
+            }
+          : undefined}
         customStyle={{
           margin: 0,
           padding: '20px 24px',
@@ -135,6 +256,60 @@ function CodeBlock({ children, className, title }) {
       >
         {code}
       </SyntaxHighlighter>
+    </div>
+  )
+}
+
+function TableOfContents({ headings, active }) {
+  if (headings.length < 3) return null
+  return (
+    <nav className="bp-toc" aria-label="Table of contents">
+      <div className="bp-toc-label">On this page</div>
+      <ul className="bp-toc-list">
+        {headings.map(h => (
+          <li key={h.id} className={`bp-toc-item level-${h.level}`}>
+            <a
+              href={`#${h.id}`}
+              className={`bp-toc-link${active === h.id ? ' active' : ''}`}
+              onClick={e => {
+                e.preventDefault()
+                document.getElementById(h.id)?.scrollIntoView({ behavior: 'smooth' })
+              }}
+            >
+              {h.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+function ShareBar({ title }) {
+  const [copied, setCopied] = useState(false)
+  const url = window.location.href
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(url)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`
+
+  return (
+    <div className="bp-share">
+      <span className="bp-share-label">Share</span>
+      <button onClick={copyLink} className="bp-share-btn">
+        {copied ? <Check size={13} /> : <Link2 size={13} />}
+        <span>{copied ? 'Copied!' : 'Copy link'}</span>
+      </button>
+      <a href={tweetUrl} target="_blank" rel="noopener noreferrer" className="bp-share-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.728-8.835L1.254 2.25H8.08l4.262 5.632L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
+        </svg>
+        <span>Share on X</span>
+      </a>
     </div>
   )
 }
@@ -181,7 +356,18 @@ export default function BlogPost() {
   const [PostComponent, setPostComponent] = useState(null)
   const [meta, setMeta] = useState(null)
   const progress = useReadingProgress()
+  const theme = useDocTheme()
+  const headings = useTOC(PostComponent)
+  const activeHeading = useActiveHeading(headings)
+  const wordCount = useWordCount(PostComponent)
   useReveal([PostComponent])
+
+  const minutesLeft = (() => {
+    if (!wordCount || progress >= 95) return null
+    const wordsLeft = Math.ceil(wordCount * (1 - progress / 100))
+    const mins = Math.ceil(wordsLeft / 200)
+    return mins <= 1 ? '< 1 min left' : `~${mins} min left`
+  })()
 
   useEffect(() => {
     const key = Object.keys(postModules).find(p => p.endsWith(`${slug}.mdx`))
@@ -209,13 +395,26 @@ export default function BlogPost() {
   const prevPart = currentIdx > 0 ? seriesParts[currentIdx - 1] : null
   const nextPart = currentIdx >= 0 && currentIdx < totalParts - 1 ? seriesParts[currentIdx + 1] : null
 
+  const canonicalUrl = `https://www.unikdahal.com.np/blog/${slug}`
+
   return (
     <article className="bp-page">
-      <div
-        className="bp-progress"
-        style={{ width: `${progress}%` }}
-        aria-hidden="true"
-      />
+      <Helmet>
+        <title>{meta.title} — Unik Dahal</title>
+        {meta.excerpt && <meta name="description" content={meta.excerpt} />}
+        <meta property="og:title" content={meta.title} />
+        {meta.excerpt && <meta property="og:description" content={meta.excerpt} />}
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:type" content="article" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content={meta.title} />
+        {meta.excerpt && <meta name="twitter:description" content={meta.excerpt} />}
+        <link rel="canonical" href={canonicalUrl} />
+      </Helmet>
+
+      <div className="bp-progress" style={{ width: `${progress}%` }} aria-hidden="true" />
+
+      <TableOfContents headings={headings} active={activeHeading} />
 
       <header className="bp-header wrap reveal">
         <Link to="/blog" className="bp-back">← Writing</Link>
@@ -234,10 +433,18 @@ export default function BlogPost() {
           <span className="bp-date">{fmtLong(meta.date)}</span>
           <span className="bp-sep">·</span>
           <span className="bp-read">{meta.readTime}</span>
+          {minutesLeft && (
+            <>
+              <span className="bp-sep">·</span>
+              <span className="bp-time-left">{minutesLeft}</span>
+            </>
+          )}
         </div>
 
         <h1 className="bp-title">{meta.title}</h1>
         {meta.excerpt && <p className="bp-excerpt">{meta.excerpt}</p>}
+
+        <ShareBar title={meta.title} />
       </header>
 
       {meta.series && totalParts > 1 && (
@@ -300,6 +507,24 @@ export default function BlogPost() {
             ) : <div />}
           </div>
         )}
+
+        <div className="bp-comments">
+          <div className="bp-comments-label">Discussion</div>
+          <Giscus
+            repo="unikdahal/Portfolio"
+            repoId="R_kgDOJCt_kQ"
+            category="General"
+            categoryId="DIC_kwDOJCt_kc4C8PIO"
+            mapping="pathname"
+            reactionsEnabled="1"
+            emitMetadata="0"
+            inputPosition="top"
+            theme={theme === 'dark' ? 'dark' : 'light'}
+            lang="en"
+            loading="lazy"
+          />
+        </div>
+
         <div className="bp-end">
           <Link to="/blog" className="bp-back-link">← Back to Writing</Link>
         </div>
