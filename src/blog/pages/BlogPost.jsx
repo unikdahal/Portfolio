@@ -4,7 +4,6 @@ import { useReveal } from '../../hooks'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { vscDarkPlus, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { Copy, Check, Link2 } from 'lucide-react'
-import Giscus from '@giscus/react'
 import { Helmet } from 'react-helmet-async'
 
 const postModules = import.meta.glob('../../content/blog/*.mdx')
@@ -285,6 +284,54 @@ function TableOfContents({ headings, active }) {
   )
 }
 
+function GiscusComments({ theme }) {
+  const ref = useRef(null)
+  const loaded = useRef(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el || loaded.current) return
+    loaded.current = true
+    const s = document.createElement('script')
+    s.src = 'https://giscus.app/client.js'
+    s.dataset.repo = 'unikdahal/Portfolio'
+    s.dataset.repoId = 'R_kgDOJCt_kQ'
+    s.dataset.category = 'General'
+    s.dataset.categoryId = 'DIC_kwDOJCt_kc4C8PIO'
+    s.dataset.mapping = 'pathname'
+    s.dataset.strict = '0'
+    s.dataset.reactionsEnabled = '1'
+    s.dataset.emitMetadata = '0'
+    s.dataset.inputPosition = 'top'
+    s.dataset.theme = theme === 'dark' ? 'dark' : 'light'
+    s.dataset.lang = 'en'
+    s.dataset.loading = 'lazy'
+    s.crossOrigin = 'anonymous'
+    s.async = true
+    el.appendChild(s)
+  }, [])
+
+  useEffect(() => {
+    const iframe = document.querySelector('iframe.giscus-frame')
+    if (!iframe) return
+    iframe.contentWindow.postMessage(
+      { giscus: { setConfig: { theme: theme === 'dark' ? 'dark' : 'light' } } },
+      'https://giscus.app'
+    )
+  }, [theme])
+
+  return <div ref={ref} />
+}
+
+function FloatingReadTime({ minutes, progress }) {
+  const visible = minutes !== null && progress > 5 && progress < 95
+  return (
+    <div className={`bp-float-time${visible ? ' visible' : ''}`} aria-live="polite">
+      {minutes}
+    </div>
+  )
+}
+
 function ShareBar({ title }) {
   const [copied, setCopied] = useState(false)
   const url = window.location.href
@@ -413,6 +460,7 @@ export default function BlogPost() {
       </Helmet>
 
       <div className="bp-progress" style={{ width: `${progress}%` }} aria-hidden="true" />
+      <FloatingReadTime minutes={minutesLeft} progress={progress} />
 
       <TableOfContents headings={headings} active={activeHeading} />
 
@@ -433,12 +481,6 @@ export default function BlogPost() {
           <span className="bp-date">{fmtLong(meta.date)}</span>
           <span className="bp-sep">·</span>
           <span className="bp-read">{meta.readTime}</span>
-          {minutesLeft && (
-            <>
-              <span className="bp-sep">·</span>
-              <span className="bp-time-left">{minutesLeft}</span>
-            </>
-          )}
         </div>
 
         <h1 className="bp-title">{meta.title}</h1>
@@ -510,19 +552,7 @@ export default function BlogPost() {
 
         <div className="bp-comments">
           <div className="bp-comments-label">Discussion</div>
-          <Giscus
-            repo="unikdahal/Portfolio"
-            repoId="R_kgDOJCt_kQ"
-            category="General"
-            categoryId="DIC_kwDOJCt_kc4C8PIO"
-            mapping="pathname"
-            reactionsEnabled="1"
-            emitMetadata="0"
-            inputPosition="top"
-            theme={theme === 'dark' ? 'dark' : 'light'}
-            lang="en"
-            loading="lazy"
-          />
+          <GiscusComments theme={theme} />
         </div>
 
         <div className="bp-end">
