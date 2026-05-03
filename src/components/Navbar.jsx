@@ -1,33 +1,54 @@
+import { Link, useLocation } from 'react-router-dom'
 import { useActiveSection } from '../hooks.jsx'
-import { posts } from '../posts.js'
 
 const BASE_LINKS = [
   { id: 'experience', label: 'Work' },
   { id: 'projects',   label: 'Projects' },
   { id: 'skills',     label: 'Stack' },
+  { id: 'blog',       label: 'Blog', isRoute: true },
   { id: 'contact',    label: 'Contact' },
 ]
 
-export default function Navbar({ theme, onToggle, activeBlogPost, onCloseBlogPost }) {
+export default function Navbar({ theme, onToggle }) {
+  const { pathname } = useLocation()
   const active = useActiveSection(['hero', 'experience', 'projects', 'skills', 'blog', 'contact'])
-
-  const navLinks = posts.length > 0
-    ? [...BASE_LINKS.slice(0, 3), { id: 'blog', label: 'Blog' }, BASE_LINKS[3]]
-    : BASE_LINKS
+  const isBlog = pathname.startsWith('/blog')
 
   return (
     <nav>
       <div className="nav-inner">
-        <a href="#hero" className="nav-brand" onClick={activeBlogPost ? onCloseBlogPost : undefined}>
+        <Link to="/" className="nav-brand">
           Unik Dahal
-        </a>
+        </Link>
         <div className="nav-links">
-          {activeBlogPost ? (
-            <button className="nav-back" onClick={onCloseBlogPost}>← Back</button>
+          {isBlog && pathname !== '/blog' ? (
+            <Link to="/blog" className="nav-back">← Back to writing</Link>
           ) : (
-            navLinks.map(l => (
-              <a key={l.id} href={`#${l.id}`} className={active === l.id ? 'active' : ''}>{l.label}</a>
-            ))
+            BASE_LINKS.map(l => {
+              if (l.isRoute) {
+                return (
+                  <Link 
+                    key={l.id} 
+                    to="/blog" 
+                    className={pathname === '/blog' ? 'active' : ''}
+                  >
+                    {l.label}
+                  </Link>
+                )
+              }
+              
+              // On the landing page, use hash links. On blog, link back to home + hash.
+              const href = !isBlog ? `#${l.id}` : `/#${l.id}`
+              return (
+                <a 
+                  key={l.id} 
+                  href={href} 
+                  className={active === l.id && !isBlog ? 'active' : ''}
+                >
+                  {l.label}
+                </a>
+              )
+            })
           )}
           <span className="nav-theme-wrap">
             <button className="nav-theme" onClick={onToggle} aria-label="Toggle theme">

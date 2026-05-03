@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-export function useReveal(dep) {
+export function useReveal(deps) {
   useEffect(() => {
     const io = new IntersectionObserver(
       (entries) => entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('in') }),
@@ -9,14 +9,14 @@ export function useReveal(dep) {
     const t = setTimeout(() => {
       document.querySelectorAll('.reveal').forEach((el) => {
         const rect = el.getBoundingClientRect()
-        if (rect.top < window.innerHeight && rect.bottom > 0 && dep === null) {
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
           el.classList.add('in', 'instant')
         }
         io.observe(el)
       })
-    }, 30)
+    }, 50)
     return () => { clearTimeout(t); io.disconnect() }
-  }, [dep])
+  }, [deps])
 }
 
 export function useActiveSection(ids) {

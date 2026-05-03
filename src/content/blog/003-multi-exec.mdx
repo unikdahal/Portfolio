@@ -1,0 +1,13 @@
+---
+title: "Transactions without ACID: MULTI/EXEC in Depth"
+category: "Systems"
+series: "Building Redis in Java"
+part: 3
+tag: "Systems · Concurrency"
+date: "2026-05-02"
+readTime: "8 min read"
+excerpt: "Implementing MULTI, EXEC, and DISCARD. How Redis queues commands and why it doesn't support rollback."
+draft: true
+---
+
+Coming soon. Redis transactions are unique. There's no rollback, only atomicity. We'll look at how the server buffers commands in a per-client queue and executes them in a single atomic block.

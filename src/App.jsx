@@ -1,14 +1,11 @@
 import { useState, useEffect } from 'react'
-import { useReveal } from './hooks.jsx'
-import Navbar      from './components/Navbar.jsx'
-import Hero        from './components/Hero.jsx'
-import Experience  from './components/Experience.jsx'
-import Projects    from './components/Projects.jsx'
-import Skills      from './components/Skills.jsx'
-import Blog        from './components/Blog.jsx'
-import BlogPost    from './components/BlogPost.jsx'
-import Contact     from './components/Contact.jsx'
-import TweaksPanel from './components/TweaksPanel.jsx'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import Navbar from './components/Navbar'
+import LandingPage from './portfolio/LandingPage'
+import BlogLayout from './layouts/BlogLayout'
+import BlogIndex from './blog/pages/BlogIndex'
+import BlogPost from './blog/pages/BlogPost'
+import TweaksPanel from './components/TweaksPanel'
 
 export default function App() {
   const [theme, setThemeState] = useState(() => {
@@ -16,9 +13,7 @@ export default function App() {
   })
   const [accent, setAccentState] = useState('#16a34a')
   const [tweaksOpen, setTweaksOpen] = useState(false)
-  const [activePost, setActivePost] = useState(null)
-  useReveal(activePost)
-
+  
   const setTheme = (t) => {
     document.documentElement.setAttribute('data-theme', t)
     setThemeState(t)
@@ -32,62 +27,46 @@ export default function App() {
     setAccentState(light)
   }
 
-  const openPost = (post) => {
-    if (post.draft) return
-    setActivePost(post)
-    window.scrollTo({ top: 0 })
-  }
-
-  const closePost = () => {
-    setActivePost(null)
-    setTimeout(() => {
-      const el = document.getElementById('blog')
-      if (el) {
-        const top = el.getBoundingClientRect().top + window.pageYOffset - 64
-        window.scrollTo({ top, behavior: 'smooth' })
-      }
-    }, 80)
-  }
-
   useEffect(() => { setTheme(theme) }, [])
 
   useEffect(() => {
     const fn = (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
       if (e.key === 't' || e.key === 'T') setTweaksOpen(v => !v)
-      if (e.key === 'Escape' && activePost) closePost()
     }
     window.addEventListener('keydown', fn)
     return () => window.removeEventListener('keydown', fn)
-  }, [activePost])
+  }, [])
 
   return (
-    <>
-      <Navbar
-        theme={theme}
-        onToggle={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-        activeBlogPost={activePost}
-        onCloseBlogPost={closePost}
-      />
-      <main>
-        {activePost ? (
-          <BlogPost post={activePost} onClose={closePost} onOpenPost={openPost} />
-        ) : (
+    <BrowserRouter>
+      <Routes>
+        {/* Portfolio Route */}
+        <Route path="/" element={
           <>
-            <Hero />
-            <Experience />
-            <Projects />
-            <Skills />
-            <Blog onOpenPost={openPost} />
-            <Contact />
+            <Navbar 
+              theme={theme} 
+              onToggle={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            />
+            <LandingPage />
           </>
-        )}
-      </main>
+        } />
+
+        {/* Blog Routes */}
+        <Route path="/blog" element={<BlogLayout theme={theme} setTheme={setTheme} />}>
+          <Route index element={<BlogIndex />} />
+          <Route path=":slug" element={<BlogPost />} />
+        </Route>
+
+        {/* Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+
       <TweaksPanel
         open={tweaksOpen} setOpen={setTweaksOpen}
         theme={theme} setTheme={setTheme}
         accent={accent} setAccent={setAccent}
       />
-    </>
+    </BrowserRouter>
   )
 }

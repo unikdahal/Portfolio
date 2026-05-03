@@ -1,0 +1,288 @@
+---
+title: "How Redis Talks: The RESP Protocol"
+category: "Systems"
+series: "Building Redis in Java"
+part: 1
+tag: "Systems · Protocol Design"
+date: "2026-05-02"
+readTime: "13 min read"
+excerpt: "Exploring the Redis Serialization Protocol (RESP) — the byte-level wire format that makes Redis compatible with clients like redis-cli."
+---
+
+Hey, welcome to the blogs in this series. I will be explaining the implementation, design choices, and everything related to my project redis-java, which you can check out on GitHub. This is the first article of the series, so let's begin.
+
+Before building a Redis server that stores a key, expires a value, or replicates a write, we need to choose a language it should understand from the client. The understanding begins at the wire protocol.
+
+Since we wanted this to be Redis compatible, we will choose the same protocol that Redis uses to communicate, called RESP: Redis Serialization Protocol. It is a complete specification for how bytes transfer between a client and server. Every command that you call, `GET`, `SET`, `EXPIRE`, passes through RESP on its way in and out.
+
+Most of you using Redis might never need to know about this, but since I am building a Redis-compatible server that must correctly handle `redis-cli`, `Jedis`, `Lettuce`, and `redis-py` without any modification, RESP is something I need to get right. Everything else in the server is downstream of the parser.
+
+This article covers what RESP looks like, why it is designed the way it is, and the specific challenges of parsing it correctly in a high-throughput streaming context.
+
+## Why not JSON? Why not HTTP?
+
+This is a valid question. Redis was designed in 2009 and JSON was already well established while HTTP was present everywhere. Why was there a need to invent a completely new protocol at all?
+
+The answer is simple: neither JSON nor HTTP is well-suited to the access pattern of a key-value store. JSON is a text format designed for human readability and schema flexibility. Both of these properties do not matter in a cache protocol. You do not need human-readable bytes. You do not need nested schemas. What you actually need is a format that is extremely fast to parse, produces low overhead per command, and maps directly to a small set of response types that a server typically returns: string, integer, error, list of strings, or nothing.
+
+HTTP carries a significant framing overhead. Every request includes a method, path, headers, and a body separator. For a workload where the average command is `GET key`, around 10 bytes of meaningful content, the HTTP headers actually dwarf the actual payload. HTTP is also inherently request-response, one at a time per connection, which conflicts directly with pipelining.
+
+RESP makes the opposite tradeoffs. It is binary-safe, minimal, and streaming friendly. A GET command is expressed in around 20 bytes. A bulk string response carries its length prefix rather than a delimiter, which means the parser never has to scan the entire content. It can skip directly to the end because it already knows the end location from the prefix length. All design decisions in RESP optimize for the throughput and simplicity of a command response protocol over a persistent connection.
+
+| Protocol | Avg overhead | Parsing cost | Binary-safe | Pipelining |
+| :------- | :----------- | :----------- | :---------- | :--------- |
+| **RESP** | ~20 bytes | O(1) type byte | ✓ | ✓ |
+| HTTP/1.1 | ~400+ bytes | O(n) header scan | ✗ | Limited |
+| JSON | Variable | O(n) full parse | ✗ | ✗ |
+
+<Callout type="tip" title="The design insight">
+A bulk string response carries its length prefix rather than a delimiter. The parser reads a declared byte count and jumps directly to the end. It never scans the content at all. That single property is what makes RESP both binary-safe and stream-friendly at the same time.
+</Callout>
+
+---
+
+## Five Types
+
+RESP2 defines five data types. Every message on the wire will be one of these, and the first byte identifies the type unambiguously.
+
+| Type | Prefix | Typical use |
+| :--- | :---: | :--- |
+| Simple String | `+` | Status responses: `OK`, `PONG` |
+| Error | `-` | Error messages with class codes |
+| Integer | `:` | Numeric results, boolean flags |
+| Bulk String | `$` | All data values and command arguments |
+| Array | `*` | Commands and multi-value responses |
+
+### 1. Simple String
+
+```text
++OK\r\n
++PONG\r\n
+```
+
+A `+` prefix followed by text, terminated by `\r\n`. This is used for short server responses where the content is known to be safe ASCII with no embedded newlines. The response to `SET` is `+OK\r\n`. The response to `PING` is `+PONG\r\n`.
+
+<Callout type="warning" title="Simple Strings are not binary safe">
+If the content could contain `\r` or `\n`, you cannot use this type. The parser uses `\r\n` as its only terminator and will misidentify where the message ends, corrupting everything that follows in the stream.
+</Callout>
+
+### 2. Error
+
+```text
+-ERR unknown command 'foo'\r\n
+-WRONGTYPE Operation against a key holding the wrong kind of value\r\n
+-READONLY You can't write against a read only replica\r\n
+```
+
+A `-` prefix followed by an error message. The first word is conventionally the error class (`ERR`, `WRONGTYPE`, `READONLY`). Clients use the error class to decide how they want to handle the failures, whether they want to retry, surface the error to the caller, or treat it as fatal.
+
+<Callout type="warning" title="Error strings are a contract">
+The `-READONLY` error that replicas return when a client attempts a write is not a suggestion. It is a specific string that Jedis and Lettuce parse to decide whether to retry on a different node. Return any other string and the client library will not route correctly.
+</Callout>
+
+### 3. Integer
+
+```text
+:1\r\n
+:0\r\n
+:42\r\n
+```
+
+A `:` prefix followed by a signed 64-bit integer, terminated by `\r\n`. Used for numeric results: the return value of `INCR`, the result of `LLEN`, the output of `TTL`, and whether `SETNX` succeeded. Integers in RESP are never floating point. `INCRBYFLOAT` returns a Bulk String, not an Integer.
+
+### 4. Bulk String
+
+The most important type. A `$` prefix, then the byte length of the content, then `\r\n`, then the content itself, then another `\r\n`.
+
+```text
+$5\r\n
+hello\r\n
+```
+
+The length prefix is what makes Bulk Strings binary safe. The parser reads exactly the declared number of bytes as content and does not scan for a delimiter. The content can contain anything: null bytes, newlines, arbitrary binary data. This is how Redis can store serialized protobuf, compressed blobs, or raw binary alongside plain text keys in the same protocol.
+
+<Callout type="note" title="Nil vs empty string">
+A length of `-1` means `$-1\r\n`, the null bulk string. `GET` on a missing key returns this. A length of `0` means `$0\r\n\r\n`, an empty string that actually exists. These are semantically distinct and a correct server must never conflate them.
+</Callout>
+
+### 5. Array
+
+```text
+*3\r\n
+$3\r\nSET\r\n
+$5\r\nmykey\r\n
+$7\r\nmyvalue\r\n
+```
+
+A `*` prefix, then the number of elements, then each element encoded in its own RESP type. Arrays can contain any mixture of types, including nested arrays.
+
+This is how every client sends commands to the server. `SET mykey myvalue` is encoded as an array of three bulk strings: `SET`, `mykey`, `myvalue`. The server receives a `*3\r\n` header, reads three bulk strings, assembles them into a command, and dispatches. A count of `-1` is the null array. A count of `0` is an empty array. Both are valid and distinct.
+
+---
+
+## What a Session Actually Looks Like
+
+Here is a minimal session covering connect, ping, set a key, and get it back, fully expanded on the wire.
+
+```text title="Wire: PING → SET → GET"
+CLIENT → SERVER
+
+*1\r\n                    ← Array of 1 element
+$4\r\n                    ← Bulk string, 4 bytes
+PING\r\n                  ← "PING"
+
+*3\r\n                    ← Array of 3 elements
+$3\r\n                    ← Bulk string, 3 bytes
+SET\r\n                   ← "SET"
+$5\r\n                    ← Bulk string, 5 bytes
+mykey\r\n                 ← "mykey"
+$7\r\n                    ← Bulk string, 7 bytes
+myvalue\r\n               ← "myvalue"
+
+*2\r\n                    ← Array of 2 elements
+$3\r\n                    ← Bulk string, 3 bytes
+GET\r\n                   ← "GET"
+$5\r\n                    ← Bulk string, 5 bytes
+mykey\r\n                 ← "mykey"
+
+
+SERVER → CLIENT
+
++PONG\r\n                 ← Simple string
+
++OK\r\n                   ← Simple string
+
+$7\r\n                    ← Bulk string, 7 bytes
+myvalue\r\n               ← "myvalue"
+```
+
+> Every message starts with one byte that tells you exactly what you are about to parse. Arrays tell you how many elements to expect. Bulk Strings tell you how many bytes to consume. There is no ambiguity at any point in the stream.
+
+---
+
+## The Parsing Challenge: Streaming and Partial Reads
+
+The protocol is simple to describe. Parsing it correctly in a production server is harder, for one reason: TCP is a stream.
+
+When the server receives bytes from a client, it receives whatever the network delivers, which may be a complete command, a fragment of a command, multiple commands concatenated together, or any combination of these. The parser cannot assume that a complete message is available every time it reads from the socket.
+
+Consider a client sending `*3\r\n$3\r\nSET\r\n$5\r\nmykey\r\n$7\r\nmyvalue\r\n`. TCP might deliver this in three separate reads:
+
+```text title="TCP: Three Partial Reads"
+Read 1:   *3\r\n$3\r\nSET\r\n$5\r\nmy
+Read 2:   key\r\n$7\r\nmyval
+Read 3:   ue\r\n
+```
+
+A naive parser that expects a complete message on each read would either hang waiting for more bytes or crash trying to parse an incomplete array. A correct parser must maintain state across reads, remembering where it is in the current message so it can resume correctly when more bytes arrive.
+
+This is fundamentally a state machine problem. At any point the parser is in one of several states:
+
+| State | Description |
+| :--- | :--- |
+| `WAITING_FOR_TYPE` | Identify the message type from the initial byte |
+| `READING_INLINE` | Gather bytes until the `\r\n` sequence is reached |
+| `READING_LENGTH` | Collect numeric digits until `\r\n`, then parse the integer |
+| `READING_BULK_CONTENT` | Ingest precisely N bytes of content |
+| `READING_TERMINATOR` | Ingest the final `\r\n` following bulk data |
+| `COMMAND_COMPLETE` | Execute the dispatch and reset the parser state |
+
+If a read is only partial, the parser remains in its current state, ensuring previously consumed bytes are preserved. Once the network delivers more data, the parser resumes exactly where it paused, rather than restarting from the beginning.
+
+<Callout type="note" title="How redis-java handles this">
+This logic lives in Netty's `RedisCommandHandler`, which works directly with `ByteBuf`. It maintains separate read and write pointers and enables zero-copy slicing. If a command is not fully parsed when the handler returns, the `ByteBuf` holds the remaining bytes for the next read event. No manual buffer management. No copying. The Netty pipeline takes care of all the plumbing.
+</Callout>
+
+---
+
+## Pipelining: Many Commands, One Flush
+
+RESP natively supports pipelining, and understanding the mechanics of this feature requires a look at what pipelining actually means at the protocol level.
+
+Pipelining is not a dedicated mode or a complex protocol extension. It is simply the optimization of sending a batch of commands to the server sequentially without waiting for the round-trip latency of individual responses.
+
+```text title="Wire: 5 Pipelined Commands"
+CLIENT → SERVER (all at once, one TCP write)
+
+*1\r\n$4\r\nPING\r\n
+*3\r\n$3\r\nSET\r\n$5\r\nkey:1\r\n$5\r\nval:1\r\n
+*3\r\n$3\r\nSET\r\n$5\r\nkey:2\r\n$5\r\nval:2\r\n
+*3\r\n$3\r\nSET\r\n$5\r\nkey:3\r\n$5\r\nval:3\r\n
+*2\r\n$3\r\nGET\r\n$5\r\nkey:1\r\n
+
+
+SERVER → CLIENT (in order, after processing all five)
+
++PONG\r\n
++OK\r\n
++OK\r\n
++OK\r\n
+$5\r\nval:1\r\n
+```
+
+From the perspective of the parser, a batch of five pipelined commands is indistinguishable from five distinct commands that simply arrived within the same TCP segment. The parser consumes them sequentially, the server executes them in the exact order received, and the responses are dispatched back in that same rigorous sequence.
+
+<Callout type="tip" title="One network tax for the whole batch">
+Without pipelining, every command is a synchronous round-trip: send, wait, receive, repeat. With pipelining, the client flushes all five commands to the wire before the server has even acknowledged the first. The round-trip cost is paid once for the entire batch.
+</Callout>
+
+In the redis-java project, pipelining support is an emergent property of the streaming parser design. The `RedisCommandHandler` simply iterates over the bytes parsing a command, dispatching it, and immediately continuing the loop if more data remains in the buffer. No special-case logic is required. Pipelining is just the natural result of consecutive commands arriving together in a streaming context.
+
+---
+
+## Binary Safety: Why It Matters More Than You Think
+
+One of RESP's most critical properties is that Bulk Strings are binary safe. While it is a detail that is easy to gloss over, it is actually the foundation of what the protocol enables.
+
+Because the content of a Bulk String is framed by a length prefix rather than a delimiter, the payload can be any arbitrary sequence of bytes. This design choice ensures that Redis can store:
+
+* Serialized protobuf or MessagePack payloads
+* Compressed data with arbitrary byte patterns
+* Session tokens containing null bytes
+* Images, audio, or other binary assets
+* JSON that happens to contain newlines
+
+None of these require any escaping, encoding, or transformation before storage. The bytes go in, the bytes come out. The protocol never misinterprets the content as framing because it already knows the payload size from the prefix.
+
+<Callout type="warning" title="Use the wrong type and the stream breaks">
+Simple Strings cannot contain `\r\n`. If a server mistakenly sends user data as a Simple String, the parser misidentifies the message boundary. The stream gets corrupted and starts throwing errors that look completely unrelated to the actual cause. Always use Bulk Strings for any user-controlled data.
+</Callout>
+
+In practice, the implementation rule is simple: client libraries always encode command arguments as Bulk Strings. Servers never send user data as Simple Strings. Simple Strings are reserved strictly for fixed, known-safe responses like `OK`, `PONG`, and standard status messages.
+
+---
+
+## Server Response: Adhering to the Specification
+
+The set of response types returned by the server is essentially a subset of the types dispatched by the client. To ensure full compatibility, a server must use each specific RESP type correctly according to the situation:
+
+| Command result | RESP type used |
+| :--- | :--- |
+| Key exists, return value | Bulk String |
+| Key does not exist | Null Bulk String (`$-1\r\n`) |
+| Write confirmed | Simple String (`+OK\r\n`) |
+| Numeric result | Integer (`:N\r\n`) |
+| List of values | Array of Bulk Strings |
+| Command failed | Error (`-ERR ...\r\n`) |
+| Wrong type used | Error (`-WRONGTYPE ...\r\n`) |
+| Blocked (`BLPOP`, timeout) | Null Array (`*-1\r\n`) |
+
+<Callout type="danger" title="Wrong type means silent failure">
+When Jedis or Lettuce dispatch `GET`, they expect a Bulk String or Null Bulk String. If a server sends a Simple String instead, the client library suffers a silent misparse or throws an exception that looks exactly like a network failure. There is no "close enough" in protocol compatibility.
+</Callout>
+
+Achieving true compatibility requires more than just understanding the individual RESP types. It demands a rigorous adherence to the specific return type of every command. This precise implementation is the core contract that allows `redis-cli`, `Jedis`, `Lettuce`, and `redis-py` to interface with `redis-java` seamlessly and without modification.
+
+---
+
+## The Foundation Everything Else Builds On
+
+> RESP is deliberately simple because everything in a Redis server depends on it. The parser runs in the hot path of every client connection. It is the first layer of the event loop, the gateway through which every command must pass before it can be routed, executed, or replicated.
+
+In the articles that follow, we will see how the event loop manages thousands of these connections simultaneously using a single thread, how commands are dispatched after parsing, and eventually how the same RESP encoding is used to propagate writes across the replication stream. Replication does not define its own wire format. It sends canonicalized RESP commands from master to replicas over a persistent connection, using the same encoding described here.
+
+That connection between RESP and replication will matter a great deal when we get to deterministic command canonicalization. For now, the important thing to have internalized is what the format looks like byte by byte, why each type exists, and what it costs to parse it incorrectly in a streaming context.
+
+The next article dives into the event loop: how Netty orchestrates ten thousand simultaneous connections through a non-blocking I/O model, and why your choice of threading model is the bedrock for everything from command dispatch to high-fidelity replication.
+
+The design choices discussed throughout this series are implemented within redis-java, a fully Redis-compatible server engineered from the ground up using Java 25.
