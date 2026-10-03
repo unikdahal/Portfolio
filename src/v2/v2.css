@@ -1552,9 +1552,14 @@
 
 .v2-footer {
   position: relative;
+  display: block;
   overflow: hidden;
+  margin: 0;
   padding: clamp(108px, 12vw, 170px) 0 34px;
   border-top: 1px solid var(--v2-line);
+  font-family: var(--v2-body);
+  font-size: inherit;
+  color: var(--v2-text);
   background:
     radial-gradient(circle at 17% 82%, rgba(var(--v2-accent-rgb), .05), transparent 26rem),
     radial-gradient(circle at 82% 20%, rgba(var(--v2-signal-rgb), .025), transparent 24rem),
