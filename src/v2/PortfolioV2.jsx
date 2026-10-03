@@ -362,7 +362,7 @@ function OpenSourceSection() {
     <section className="v2-section v2-oss" id="open-source">
       <div className="v2-container">
         <div className="v2-section-heading v2-reveal">
-          <span>03 · Open source</span>
+          <span>04 · Open source</span>
           <h2>Working closer to the engine.</h2>
           <p>
             Recent work across native Spark execution, Arrow Flight SQL clients,
@@ -410,7 +410,7 @@ function RedisSection() {
       <div className="v2-container">
         <div className="v2-built-grid">
           <div className="v2-built-copy v2-reveal">
-            <span>04 · From first principles</span>
+            <span>05 · From first principles</span>
             <h2>Sometimes I rebuild the system to understand it.</h2>
             <p>
               redis-java is a Redis-compatible server built around Netty and RESP,
@@ -457,7 +457,7 @@ function ExperienceSection() {
     <section className="v2-section v2-experience">
       <div className="v2-container">
         <div className="v2-section-heading v2-section-heading-compact v2-reveal">
-          <span>05 · Experience</span>
+          <span>06 · Experience</span>
           <h2>The short version.</h2>
         </div>
 
@@ -582,7 +582,7 @@ export default function PortfolioV2() {
       <section className="v2-section v2-work-section" id="work">
         <div className="v2-container">
           <div className="v2-section-heading v2-reveal">
-            <span>01 · Selected work</span>
+            <span>01–03 · Selected work</span>
             <h2>Production systems, not portfolio demos.</h2>
             <p>
               A few pieces of infrastructure where the interesting work lived
