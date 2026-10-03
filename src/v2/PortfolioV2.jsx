@@ -1,9 +1,20 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import './v2.css'
 
 const GITHUB = 'https://github.com/unikdahal'
 const LINKEDIN = 'https://www.linkedin.com/in/unikdahal'
+
+function getInitialTheme() {
+  if (typeof window === 'undefined') return 'dark'
+
+  try {
+    const saved = window.localStorage.getItem('unik-v2-theme')
+    if (saved === 'light' || saved === 'dark') return saved
+  } catch {}
+
+  return window.matchMedia?.('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+}
 
 function DataPathVisual() {
   return (
@@ -11,13 +22,13 @@ function DataPathVisual() {
       <svg viewBox="0 0 720 580" role="presentation">
         <defs>
           <linearGradient id="v2-path-gradient" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#8f8cff" stopOpacity="0.12" />
-            <stop offset="55%" stopColor="#8f8cff" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="#d7d6ff" stopOpacity="0.18" />
+            <stop offset="0%" className="v2-gradient-start" />
+            <stop offset="56%" className="v2-gradient-mid" />
+            <stop offset="100%" className="v2-gradient-end" />
           </linearGradient>
           <radialGradient id="v2-node-glow">
-            <stop offset="0%" stopColor="#b7b5ff" stopOpacity="0.9" />
-            <stop offset="100%" stopColor="#7776ff" stopOpacity="0" />
+            <stop offset="0%" className="v2-glow-start" />
+            <stop offset="100%" className="v2-glow-end" />
           </radialGradient>
           <filter id="v2-soft-glow" x="-80%" y="-80%" width="260%" height="260%">
             <feGaussianBlur stdDeviation="9" />
@@ -29,34 +40,28 @@ function DataPathVisual() {
         <path className="v2-path" d="M429 294 C476 362 525 392 603 376" />
         <path className="v2-path v2-path-faint" d="M143 451 C213 451 224 410 278 410 S364 465 444 448" />
 
-        <g className="v2-node v2-node-a" transform="translate(74 386)">
-          <circle className="v2-node-halo" r="28" />
-          <circle className="v2-node-ring" r="9" />
-          <circle className="v2-node-core" r="3" />
-        </g>
-        <g className="v2-node v2-node-b" transform="translate(246 284)">
-          <circle className="v2-node-halo" r="28" />
-          <circle className="v2-node-ring" r="9" />
-          <circle className="v2-node-core" r="3" />
-        </g>
-        <g className="v2-node v2-node-c" transform="translate(429 294)">
-          <circle className="v2-node-halo" r="28" />
-          <circle className="v2-node-ring" r="9" />
-          <circle className="v2-node-core" r="3" />
-        </g>
-        <g className="v2-node v2-node-d" transform="translate(650 209)">
-          <circle className="v2-node-halo" r="28" />
-          <circle className="v2-node-ring" r="9" />
-          <circle className="v2-node-core" r="3" />
-        </g>
-        <g className="v2-node v2-node-e" transform="translate(386 163)">
-          <circle className="v2-node-ring" r="7" />
-          <circle className="v2-node-core" r="2.5" />
-        </g>
-        <g className="v2-node v2-node-f" transform="translate(603 376)">
-          <circle className="v2-node-ring" r="7" />
-          <circle className="v2-node-core" r="2.5" />
-        </g>
+        {[
+          [74, 386, 'a'],
+          [246, 284, 'b'],
+          [429, 294, 'c'],
+          [650, 209, 'd'],
+        ].map(([x, y, id]) => (
+          <g className={'v2-node v2-node-' + id} transform={'translate(' + x + ' ' + y + ')'} key={id}>
+            <circle className="v2-node-halo" r="28" />
+            <circle className="v2-node-ring" r="9" />
+            <circle className="v2-node-core" r="3" />
+          </g>
+        ))}
+
+        {[
+          [386, 163, 'e'],
+          [603, 376, 'f'],
+        ].map(([x, y, id]) => (
+          <g className={'v2-node v2-node-' + id} transform={'translate(' + x + ' ' + y + ')'} key={id}>
+            <circle className="v2-node-ring" r="7" />
+            <circle className="v2-node-core" r="2.5" />
+          </g>
+        ))}
 
         <circle className="v2-traveller v2-traveller-one" r="4">
           <animateMotion
@@ -91,12 +96,29 @@ function ArrowIcon() {
   )
 }
 
+function ThemeIcon({ theme }) {
+  if (theme === 'dark') {
+    return (
+      <svg viewBox="0 0 20 20" aria-hidden="true">
+        <circle cx="10" cy="10" r="3.2" fill="none" stroke="currentColor" strokeWidth="1.35" />
+        <path d="M10 2.1v2M10 15.9v2M2.1 10h2M15.9 10h2M4.4 4.4l1.4 1.4M14.2 14.2l1.4 1.4M15.6 4.4l-1.4 1.4M5.8 14.2l-1.4 1.4" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+      </svg>
+    )
+  }
+
+  return (
+    <svg viewBox="0 0 20 20" aria-hidden="true">
+      <path d="M15.7 12.7A6.2 6.2 0 0 1 7.3 4.3 6.2 6.2 0 1 0 15.7 12.7Z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 function QueryPathDiagram() {
   return (
     <div className="v2-query-visual v2-reveal">
       <div className="v2-query-visual-head">
         <span>Transport profile</span>
-        <span>Fixed overhead / representative path</span>
+        <span>Fixed overhead · representative path</span>
       </div>
 
       <div className="v2-latency-comparison" aria-label="Query transport overhead reduced from approximately 1.5 seconds to approximately 90 milliseconds">
@@ -155,6 +177,14 @@ function QueryPathDiagram() {
 }
 
 export default function PortfolioV2() {
+  const [theme, setTheme] = useState(getInitialTheme)
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem('unik-v2-theme', theme)
+    } catch {}
+  }, [theme])
+
   useEffect(() => {
     const nodes = document.querySelectorAll('.v2-shell .v2-reveal')
     const observer = new IntersectionObserver(
@@ -173,14 +203,19 @@ export default function PortfolioV2() {
     return () => observer.disconnect()
   }, [])
 
+  const toggleTheme = () => {
+    setTheme((current) => (current === 'dark' ? 'light' : 'dark'))
+  }
+
   return (
-    <main className="v2-shell">
+    <main className="v2-shell" data-v2-theme={theme}>
       <Helmet>
         <title>Unik Dahal — Data Infrastructure & Distributed Systems</title>
         <meta
           name="description"
           content="Unik Dahal builds data infrastructure, query execution systems, and distributed backends across Spark, Iceberg, Arrow, and Apache open source."
         />
+        <meta name="theme-color" content={theme === 'dark' ? '#0d121a' : '#f3f5f8'} />
       </Helmet>
 
       <section className="v2-hero">
@@ -190,11 +225,23 @@ export default function PortfolioV2() {
             <span className="v2-brand-name">Unik Dahal</span>
           </a>
 
-          <div className="v2-nav-links">
-            <a href="#selected-work">Work</a>
-            <a href={GITHUB} target="_blank" rel="noreferrer">GitHub</a>
-            <a href="/blog">Writing</a>
-            <a className="v2-nav-v1" href="/">V1</a>
+          <div className="v2-nav-right">
+            <nav className="v2-nav-links" aria-label="Portfolio navigation">
+              <a href="#selected-work">Work</a>
+              <a href={GITHUB} target="_blank" rel="noreferrer">GitHub</a>
+              <a href="/blog">Writing</a>
+              <a className="v2-nav-v1" href="/">V1</a>
+            </nav>
+
+            <button
+              className="v2-theme-toggle"
+              type="button"
+              onClick={toggleTheme}
+              aria-label={'Switch to ' + (theme === 'dark' ? 'light' : 'dark') + ' mode'}
+              title={'Switch to ' + (theme === 'dark' ? 'light' : 'dark') + ' mode'}
+            >
+              <ThemeIcon theme={theme} />
+            </button>
           </div>
         </header>
 
@@ -265,7 +312,7 @@ export default function PortfolioV2() {
         <div className="v2-work-inner">
           <div className="v2-section-top v2-reveal">
             <span className="v2-section-index">01</span>
-            <span className="v2-section-label">Selected work / Query infrastructure</span>
+            <span className="v2-section-label">Selected work · query infrastructure</span>
             <span className="v2-section-year">2025—26</span>
           </div>
 
@@ -325,7 +372,7 @@ export default function PortfolioV2() {
       </section>
 
       <div className="v2-preview-footer">
-        <span>Unik Dahal / Portfolio V2</span>
+        <span>Unik Dahal · Portfolio V2</span>
         <div>
           <a href={GITHUB} target="_blank" rel="noreferrer">GitHub</a>
           <a href={LINKEDIN} target="_blank" rel="noreferrer">LinkedIn</a>
