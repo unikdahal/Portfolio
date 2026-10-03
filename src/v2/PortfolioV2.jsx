@@ -548,14 +548,6 @@ export default function PortfolioV2() {
               I’m Unik, a software engineer working on query execution,
               lakehouse infrastructure, and distributed backends.
             </p>
-
-            <div className="v2-hero-links">
-              <a className="v2-hero-primary" href="#work">
-                Selected work
-                <ArrowIcon />
-              </a>
-              <a href={GITHUB} target="_blank" rel="noreferrer">GitHub</a>
-            </div>
           </div>
 
           <div className="v2-hero-meta">
@@ -563,12 +555,18 @@ export default function PortfolioV2() {
             <i />
             <span>Hyderabad, India · from Nepal</span>
           </div>
+
+          <a className="v2-hero-work-link" href="#work">
+            <span>Selected work</span>
+            <i aria-hidden="true" />
+          </a>
         </div>
 
-        <a className="v2-scroll-cue" href="#work" aria-label="Scroll to selected work">
-          <span>Explore</span>
-          <i />
-        </a>
+        <div className="v2-hero-signature" aria-hidden="true">
+          <span>query execution</span>
+          <span>lakehouse systems</span>
+          <span>open source</span>
+        </div>
       </section>
 
       <section className="v2-section v2-work-section" id="work">
