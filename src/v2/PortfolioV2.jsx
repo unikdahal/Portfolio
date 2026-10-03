@@ -5,6 +5,63 @@ import './v2.css'
 const GITHUB = 'https://github.com/unikdahal'
 const LINKEDIN = 'https://www.linkedin.com/in/unikdahal'
 
+const OSS_GROUPS = [
+  {
+    repo: 'Apache DataFusion Comet',
+    eyebrow: 'Query execution',
+    items: [
+      {
+        pr: '#5318',
+        title: 'Native MergeRowsExec for row-level MERGE',
+        status: 'In review',
+        href: 'https://github.com/apache/datafusion-comet/pull/5318',
+      },
+      {
+        pr: '#5412',
+        title: 'Distinguish Iceberg reflection failures from absent accessors',
+        status: 'Merged',
+        href: 'https://github.com/apache/datafusion-comet/pull/5412',
+      },
+    ],
+  },
+  {
+    repo: 'Apache Arrow ADBC',
+    eyebrow: 'Flight SQL',
+    items: [
+      {
+        pr: '#4747',
+        title: 'Flight SQL session management for the Java driver',
+        status: 'In review',
+        href: 'https://github.com/apache/arrow-adbc/pull/4747',
+      },
+      {
+        pr: '#4539',
+        title: 'flightsql:// URI support for the Java driver',
+        status: 'Merged',
+        href: 'https://github.com/apache/arrow-adbc/pull/4539',
+      },
+    ],
+  },
+  {
+    repo: 'iceberg-rust',
+    eyebrow: 'Row-level writes',
+    items: [
+      {
+        pr: '#3291',
+        title: 'File-scoped position delete index loader',
+        status: 'In review',
+        href: 'https://github.com/apache/iceberg-rust/pull/3291',
+      },
+      {
+        pr: '#3329',
+        title: 'Sorting position-only delete writer',
+        status: 'In review',
+        href: 'https://github.com/apache/iceberg-rust/pull/3329',
+      },
+    ],
+  },
+]
+
 function getInitialTheme() {
   if (typeof window === 'undefined') return 'dark'
 
@@ -176,6 +233,131 @@ function QueryPathDiagram() {
   )
 }
 
+function MigrationVisual() {
+  return (
+    <div className="v2-migration-visual v2-reveal" aria-label="Phased migration from Snowflake to Spark and Iceberg">
+      <div className="v2-migration-axis" aria-hidden="true">
+        <span>Existing path</span>
+        <i />
+        <span>Phased transition</span>
+        <i />
+        <span>Lakehouse path</span>
+      </div>
+
+      <div className="v2-migration-map">
+        <div className="v2-system-node v2-system-node-old">
+          <span className="v2-system-label">Warehouse</span>
+          <strong>Snowflake</strong>
+          <small>existing analytical path</small>
+        </div>
+
+        <div className="v2-migration-bridge" aria-hidden="true">
+          <div className="v2-bridge-line">
+            <span className="v2-bridge-pulse" />
+          </div>
+          <div className="v2-bridge-note">
+            <span>01</span>
+            <p>Move ingestion first</p>
+          </div>
+          <div className="v2-bridge-note">
+            <span>02</span>
+            <p>Preserve compatibility</p>
+          </div>
+          <div className="v2-bridge-note">
+            <span>03</span>
+            <p>Shift reads progressively</p>
+          </div>
+        </div>
+
+        <div className="v2-system-stack">
+          <div className="v2-system-node v2-system-node-new">
+            <span className="v2-system-label">Execution</span>
+            <strong>Apache Spark</strong>
+          </div>
+          <div className="v2-stack-connector" />
+          <div className="v2-system-node v2-system-node-new">
+            <span className="v2-system-label">Table format</span>
+            <strong>Apache Iceberg</strong>
+          </div>
+          <div className="v2-stack-connector" />
+          <div className="v2-system-node v2-system-node-new">
+            <span className="v2-system-label">Catalog</span>
+            <strong>Polaris</strong>
+          </div>
+        </div>
+      </div>
+
+      <div className="v2-migration-foot">
+        <span>Phased migration, not a flag day</span>
+        <strong>~90% <small>compute reduction</small></strong>
+      </div>
+    </div>
+  )
+}
+
+function OpenSourceLedger() {
+  return (
+    <section className="v2-oss" id="open-source">
+      <div className="v2-oss-inner">
+        <div className="v2-section-top v2-reveal">
+          <span className="v2-section-index">03</span>
+          <span className="v2-section-label">Working in public · Apache ecosystem</span>
+          <span className="v2-section-year">2026</span>
+        </div>
+
+        <div className="v2-oss-layout">
+          <div className="v2-oss-intro v2-reveal">
+            <p className="v2-oss-overline">Open source</p>
+            <h2>
+              The stack doesn’t end
+              <span>at the API.</span>
+            </h2>
+            <p className="v2-oss-copy">
+              I contribute where the abstraction gets interesting: Spark-native execution,
+              Flight SQL clients, and Iceberg row-level write infrastructure.
+            </p>
+            <a className="v2-inline-link" href={GITHUB} target="_blank" rel="noreferrer">
+              github.com/unikdahal
+              <ArrowIcon />
+            </a>
+          </div>
+
+          <div className="v2-oss-ledger">
+            {OSS_GROUPS.map((group) => (
+              <div className="v2-oss-group v2-reveal" key={group.repo}>
+                <div className="v2-oss-group-head">
+                  <div>
+                    <span>{group.eyebrow}</span>
+                    <h3>{group.repo}</h3>
+                  </div>
+                  <span className="v2-oss-count">{String(group.items.length).padStart(2, '0')}</span>
+                </div>
+
+                <div className="v2-oss-items">
+                  {group.items.map((item) => {
+                    const merged = item.status === 'Merged'
+                    return (
+                      <a className="v2-oss-item" href={item.href} target="_blank" rel="noreferrer" key={item.pr}>
+                        <span className="v2-oss-pr">{item.pr}</span>
+                        <span className="v2-oss-title">{item.title}</span>
+                        <span className={'v2-oss-status ' + (merged ? 'is-merged' : 'is-review')}>
+                          <i />
+                          {item.status}
+                        </span>
+                        <ArrowIcon />
+                      </a>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default function PortfolioV2() {
   const [theme, setTheme] = useState(getInitialTheme)
 
@@ -228,7 +410,7 @@ export default function PortfolioV2() {
           <div className="v2-nav-right">
             <nav className="v2-nav-links" aria-label="Portfolio navigation">
               <a href="#selected-work">Work</a>
-              <a href={GITHUB} target="_blank" rel="noreferrer">GitHub</a>
+              <a href="#open-source">Open source</a>
               <a href="/blog">Writing</a>
               <a className="v2-nav-v1" href="/">V1</a>
             </nav>
@@ -360,16 +542,64 @@ export default function PortfolioV2() {
             </div>
           </div>
 
-          <div className="v2-work-end v2-reveal">
-            <span>Next in V2</span>
-            <p>Lakehouse migration · open source · systems built from first principles.</p>
-            <a href={GITHUB} target="_blank" rel="noreferrer">
-              Follow the work on GitHub
-              <ArrowIcon />
-            </a>
+          <a className="v2-next-chapter v2-reveal" href="#lakehouse">
+            <span>02</span>
+            <p>Changing the analytical engine</p>
+            <ArrowIcon />
+          </a>
+        </div>
+      </section>
+
+      <section className="v2-migration" id="lakehouse">
+        <div className="v2-migration-inner">
+          <div className="v2-section-top v2-reveal">
+            <span className="v2-section-index">02</span>
+            <span className="v2-section-label">Selected work · lakehouse migration</span>
+            <span className="v2-section-year">2025—26</span>
+          </div>
+
+          <div className="v2-migration-heading">
+            <div className="v2-migration-number v2-reveal">
+              <strong>20M+</strong>
+              <span>tables in scope</span>
+            </div>
+
+            <div className="v2-migration-title v2-reveal">
+              <p>Phased, compatibility-first migration</p>
+              <h2>
+                Changing the engine
+                <span>without changing the product.</span>
+              </h2>
+            </div>
+          </div>
+
+          <MigrationVisual />
+
+          <div className="v2-migration-story">
+            <p className="v2-migration-lead v2-reveal">
+              The hard part wasn’t standing up Spark. It was moving a live analytical product
+              while keeping existing workflows behaving as if nothing underneath had changed.
+            </p>
+
+            <div className="v2-migration-details v2-reveal">
+              <p>
+                The migration moved ingestion toward Spark and Iceberg first, retained compatibility
+                while reads and user actions still crossed the old path, and progressively shifted
+                analytical execution onto the lakehouse stack. The resulting architecture cut
+                compute materially while preserving the product contract during the transition.
+              </p>
+              <div className="v2-work-tags">
+                <span>Apache Spark</span>
+                <span>Apache Iceberg</span>
+                <span>Polaris</span>
+                <span>Snowflake</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
+
+      <OpenSourceLedger />
 
       <div className="v2-preview-footer">
         <span>Unik Dahal · Portfolio V2</span>
