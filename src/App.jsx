@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import LandingPage from './portfolio/LandingPage'
+import PortfolioV2 from './v2/PortfolioV2'
 import BlogLayout from './layouts/BlogLayout'
 import BlogIndex from './blog/pages/BlogIndex'
 import BlogPost from './blog/pages/BlogPost'
@@ -51,6 +52,9 @@ export default function App() {
             <LandingPage />
           </>
         } />
+
+        {/* Portfolio V2 — isolated redesign */}
+        <Route path="/v2/*" element={<PortfolioV2 />} />
 
         {/* Blog Routes */}
         <Route path="/blog" element={<BlogLayout theme={theme} setTheme={setTheme} />}>
