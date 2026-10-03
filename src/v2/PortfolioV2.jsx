@@ -562,11 +562,6 @@ export default function PortfolioV2() {
           </a>
         </div>
 
-        <div className="v2-hero-signature" aria-hidden="true">
-          <span>query execution</span>
-          <span>lakehouse systems</span>
-          <span>open source</span>
-        </div>
       </section>
 
       <section className="v2-section v2-work-section" id="work">
