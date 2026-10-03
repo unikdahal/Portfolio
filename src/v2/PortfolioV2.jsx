@@ -7,8 +7,8 @@ const LINKEDIN = 'https://www.linkedin.com/in/unikdahal'
 
 const OSS_GROUPS = [
   {
-    repo: 'Apache DataFusion Comet',
-    eyebrow: 'Query execution',
+    name: 'Apache DataFusion Comet',
+    focus: 'Native query execution',
     items: [
       {
         pr: '#5318',
@@ -18,33 +18,33 @@ const OSS_GROUPS = [
       },
       {
         pr: '#5412',
-        title: 'Distinguish Iceberg reflection failures from absent accessors',
+        title: 'Iceberg reflection failure handling',
         status: 'Merged',
         href: 'https://github.com/apache/datafusion-comet/pull/5412',
       },
     ],
   },
   {
-    repo: 'Apache Arrow ADBC',
-    eyebrow: 'Flight SQL',
+    name: 'Apache Arrow ADBC',
+    focus: 'Flight SQL clients',
     items: [
       {
         pr: '#4747',
-        title: 'Flight SQL session management for the Java driver',
+        title: 'Flight SQL session management',
         status: 'In review',
         href: 'https://github.com/apache/arrow-adbc/pull/4747',
       },
       {
         pr: '#4539',
-        title: 'flightsql:// URI support for the Java driver',
+        title: 'flightsql:// URI support',
         status: 'Merged',
         href: 'https://github.com/apache/arrow-adbc/pull/4539',
       },
     ],
   },
   {
-    repo: 'iceberg-rust',
-    eyebrow: 'Row-level writes',
+    name: 'iceberg-rust',
+    focus: 'Row-level write infrastructure',
     items: [
       {
         pr: '#3291',
@@ -73,82 +73,17 @@ function getInitialTheme() {
   return window.matchMedia?.('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
 }
 
-function DataPathVisual() {
-  return (
-    <div className="v2-data-visual" aria-hidden="true">
-      <svg viewBox="0 0 720 580" role="presentation">
-        <defs>
-          <linearGradient id="v2-path-gradient" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" className="v2-gradient-start" />
-            <stop offset="56%" className="v2-gradient-mid" />
-            <stop offset="100%" className="v2-gradient-end" />
-          </linearGradient>
-          <radialGradient id="v2-node-glow">
-            <stop offset="0%" className="v2-glow-start" />
-            <stop offset="100%" className="v2-glow-end" />
-          </radialGradient>
-          <filter id="v2-soft-glow" x="-80%" y="-80%" width="260%" height="260%">
-            <feGaussianBlur stdDeviation="9" />
-          </filter>
-        </defs>
-
-        <path className="v2-path v2-path-main" d="M74 386 C152 386 157 284 246 284 S347 362 429 294 S536 173 650 209" />
-        <path className="v2-path" d="M246 284 C281 216 326 173 386 163" />
-        <path className="v2-path" d="M429 294 C476 362 525 392 603 376" />
-        <path className="v2-path v2-path-faint" d="M143 451 C213 451 224 410 278 410 S364 465 444 448" />
-
-        {[
-          [74, 386, 'a'],
-          [246, 284, 'b'],
-          [429, 294, 'c'],
-          [650, 209, 'd'],
-        ].map(([x, y, id]) => (
-          <g className={'v2-node v2-node-' + id} transform={'translate(' + x + ' ' + y + ')'} key={id}>
-            <circle className="v2-node-halo" r="28" />
-            <circle className="v2-node-ring" r="9" />
-            <circle className="v2-node-core" r="3" />
-          </g>
-        ))}
-
-        {[
-          [386, 163, 'e'],
-          [603, 376, 'f'],
-        ].map(([x, y, id]) => (
-          <g className={'v2-node v2-node-' + id} transform={'translate(' + x + ' ' + y + ')'} key={id}>
-            <circle className="v2-node-ring" r="7" />
-            <circle className="v2-node-core" r="2.5" />
-          </g>
-        ))}
-
-        <circle className="v2-traveller v2-traveller-one" r="4">
-          <animateMotion
-            dur="6.2s"
-            repeatCount="indefinite"
-            path="M74 386 C152 386 157 284 246 284 S347 362 429 294 S536 173 650 209"
-          />
-        </circle>
-        <circle className="v2-traveller v2-traveller-two" r="3">
-          <animateMotion
-            begin="-2.4s"
-            dur="6.2s"
-            repeatCount="indefinite"
-            path="M74 386 C152 386 157 284 246 284 S347 362 429 294 S536 173 650 209"
-          />
-        </circle>
-      </svg>
-
-      <span className="v2-data-label v2-data-label-scan">scan</span>
-      <span className="v2-data-label v2-data-label-shuffle">shuffle</span>
-      <span className="v2-data-label v2-data-label-flight">flight</span>
-      <span className="v2-data-label v2-data-label-write">write</span>
-    </div>
-  )
-}
-
 function ArrowIcon() {
   return (
     <svg viewBox="0 0 20 20" aria-hidden="true">
-      <path d="M4 10h11M11 6l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d="M4 10h11M11 6l4 4-4 4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   )
 }
@@ -158,76 +93,135 @@ function ThemeIcon({ theme }) {
     return (
       <svg viewBox="0 0 20 20" aria-hidden="true">
         <circle cx="10" cy="10" r="3.2" fill="none" stroke="currentColor" strokeWidth="1.35" />
-        <path d="M10 2.1v2M10 15.9v2M2.1 10h2M15.9 10h2M4.4 4.4l1.4 1.4M14.2 14.2l1.4 1.4M15.6 4.4l-1.4 1.4M5.8 14.2l-1.4 1.4" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+        <path
+          d="M10 2.1v2M10 15.9v2M2.1 10h2M15.9 10h2M4.4 4.4l1.4 1.4M14.2 14.2l1.4 1.4M15.6 4.4l-1.4 1.4M5.8 14.2l-1.4 1.4"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.25"
+          strokeLinecap="round"
+        />
       </svg>
     )
   }
 
   return (
     <svg viewBox="0 0 20 20" aria-hidden="true">
-      <path d="M15.7 12.7A6.2 6.2 0 0 1 7.3 4.3 6.2 6.2 0 1 0 15.7 12.7Z" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      <path
+        d="M15.7 12.7A6.2 6.2 0 0 1 7.3 4.3 6.2 6.2 0 1 0 15.7 12.7Z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
     </svg>
   )
 }
 
-function QueryPathDiagram() {
+function SystemField() {
   return (
-    <div className="v2-query-visual v2-reveal">
-      <div className="v2-query-visual-head">
-        <span>Transport profile</span>
-        <span>Fixed overhead · representative path</span>
+    <div className="v2-system-field" aria-hidden="true">
+      <svg viewBox="0 0 1500 820" preserveAspectRatio="xMidYMid slice" role="presentation">
+        <defs>
+          <linearGradient id="v2-field-main" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" className="v2-field-gradient-start" />
+            <stop offset="54%" className="v2-field-gradient-mid" />
+            <stop offset="100%" className="v2-field-gradient-end" />
+          </linearGradient>
+          <filter id="v2-field-glow" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur stdDeviation="8" />
+          </filter>
+        </defs>
+
+        <path className="v2-field-line v2-field-line-main" d="M690 706 C760 640 742 553 828 512 C915 471 934 398 1014 361 C1107 318 1120 224 1248 201 C1335 186 1407 134 1472 82" />
+        <path className="v2-field-line" d="M828 512 C789 445 804 381 865 334 C916 294 929 234 910 164" />
+        <path className="v2-field-line" d="M1014 361 C1075 422 1145 444 1235 425 C1336 404 1401 438 1477 500" />
+        <path className="v2-field-line v2-field-line-dashed" d="M590 642 C683 595 707 521 691 448 C677 384 708 324 774 289" />
+        <path className="v2-field-line v2-field-line-dashed" d="M1198 202 C1194 277 1241 315 1311 322 C1380 329 1434 366 1484 420" />
+        <path className="v2-field-line v2-field-line-faint" d="M916 294 C1031 268 1088 199 1125 114" />
+
+        {[
+          [690, 706, 12],
+          [828, 512, 13],
+          [1014, 361, 14],
+          [1248, 201, 12],
+          [865, 334, 9],
+          [1235, 425, 9],
+          [774, 289, 8],
+          [1311, 322, 8],
+        ].map(([x, y, r], index) => (
+          <g className="v2-field-node" transform={`translate(${x} ${y})`} key={index}>
+            <circle className="v2-field-node-glow" r={r * 2.5} />
+            <circle className="v2-field-node-ring" r={r} />
+            <circle className="v2-field-node-core" r={Math.max(2.5, r * 0.28)} />
+          </g>
+        ))}
+
+        <circle className="v2-field-packet v2-field-packet-one" r="4">
+          <animateMotion
+            dur="7.4s"
+            repeatCount="indefinite"
+            path="M690 706 C760 640 742 553 828 512 C915 471 934 398 1014 361 C1107 318 1120 224 1248 201 C1335 186 1407 134 1472 82"
+          />
+        </circle>
+        <circle className="v2-field-packet v2-field-packet-two" r="3">
+          <animateMotion
+            begin="-3.2s"
+            dur="7.4s"
+            repeatCount="indefinite"
+            path="M690 706 C760 640 742 553 828 512 C915 471 934 398 1014 361 C1107 318 1120 224 1248 201 C1335 186 1407 134 1472 82"
+          />
+        </circle>
+      </svg>
+
+      <span className="v2-field-label v2-field-label-scan">scan</span>
+      <span className="v2-field-label v2-field-label-shuffle">shuffle</span>
+      <span className="v2-field-label v2-field-label-merge">merge</span>
+      <span className="v2-field-label v2-field-label-flight">flight</span>
+      <span className="v2-field-label v2-field-label-write">write</span>
+    </div>
+  )
+}
+
+function QueryVisual() {
+  return (
+    <div className="v2-query-visual" aria-label="Fixed query overhead reduced from approximately 1.5 seconds to approximately 90 milliseconds">
+      <div className="v2-query-caption">
+        <span>Fixed transport overhead</span>
+        <span>before / after</span>
       </div>
 
-      <div className="v2-latency-comparison" aria-label="Query transport overhead reduced from approximately 1.5 seconds to approximately 90 milliseconds">
-        <div className="v2-latency-row v2-latency-before">
-          <div className="v2-latency-copy">
-            <span className="v2-latency-state">Before</span>
+      <div className="v2-query-bars">
+        <div className="v2-query-row">
+          <div className="v2-query-row-label">
+            <span>Before</span>
             <strong>JDBC / Thrift</strong>
           </div>
-          <div className="v2-latency-track">
-            <div className="v2-latency-fill" />
-            <span className="v2-latency-value">~1.5s</span>
+          <div className="v2-query-track">
+            <i className="v2-query-bar v2-query-bar-before" />
+            <b>~1.5s</b>
           </div>
         </div>
 
-        <div className="v2-latency-row v2-latency-after">
-          <div className="v2-latency-copy">
-            <span className="v2-latency-state">After</span>
+        <div className="v2-query-row">
+          <div className="v2-query-row-label">
+            <span>After</span>
             <strong>ADBC / Flight SQL</strong>
           </div>
-          <div className="v2-latency-track">
-            <div className="v2-latency-fill" />
-            <span className="v2-latency-value">~90ms</span>
+          <div className="v2-query-track">
+            <i className="v2-query-bar v2-query-bar-after" />
+            <b>~90ms</b>
           </div>
         </div>
       </div>
 
-      <div className="v2-route-pair">
-        <div className="v2-route">
-          <span className="v2-route-index">01</span>
-          <div className="v2-route-flow">
-            <span>Data service</span>
-            <i />
-            <span>JDBC</span>
-            <i />
-            <span>Kyuubi / Thrift</span>
-            <i />
-            <span>Spark</span>
-          </div>
-        </div>
-
-        <div className="v2-route v2-route-new">
-          <span className="v2-route-index">02</span>
-          <div className="v2-route-flow">
-            <span>Data service</span>
-            <i />
-            <span>ADBC client</span>
-            <i />
-            <span>Flight SQL</span>
-            <i />
-            <span>Spark</span>
-          </div>
-        </div>
+      <div className="v2-query-route">
+        <span>Data service</span>
+        <i />
+        <span>ADBC client</span>
+        <i />
+        <span>Flight SQL</span>
+        <i />
+        <span>Spark</span>
       </div>
     </div>
   )
@@ -235,122 +229,238 @@ function QueryPathDiagram() {
 
 function MigrationVisual() {
   return (
-    <div className="v2-migration-visual v2-reveal" aria-label="Phased migration from Snowflake to Spark and Iceberg">
-      <div className="v2-migration-axis" aria-hidden="true">
-        <span>Existing path</span>
-        <i />
-        <span>Phased transition</span>
-        <i />
-        <span>Lakehouse path</span>
+    <div className="v2-migration-visual" aria-label="Phased migration from Snowflake to Spark and Iceberg">
+      <div className="v2-migration-old">
+        <span>Existing analytical path</span>
+        <strong>Snowflake</strong>
       </div>
 
-      <div className="v2-migration-map">
-        <div className="v2-system-node v2-system-node-old">
-          <span className="v2-system-label">Warehouse</span>
-          <strong>Snowflake</strong>
-          <small>existing analytical path</small>
+      <div className="v2-migration-flow">
+        <div className="v2-migration-line">
+          <i className="v2-migration-packet" />
         </div>
-
-        <div className="v2-migration-bridge" aria-hidden="true">
-          <div className="v2-bridge-line">
-            <span className="v2-bridge-pulse" />
-          </div>
-          <div className="v2-bridge-note">
-            <span>01</span>
-            <p>Move ingestion first</p>
-          </div>
-          <div className="v2-bridge-note">
-            <span>02</span>
-            <p>Preserve compatibility</p>
-          </div>
-          <div className="v2-bridge-note">
-            <span>03</span>
-            <p>Shift reads progressively</p>
-          </div>
+        <div className="v2-migration-step v2-migration-step-one">
+          <b>01</b>
+          <span>move ingestion</span>
         </div>
-
-        <div className="v2-system-stack">
-          <div className="v2-system-node v2-system-node-new">
-            <span className="v2-system-label">Execution</span>
-            <strong>Apache Spark</strong>
-          </div>
-          <div className="v2-stack-connector" />
-          <div className="v2-system-node v2-system-node-new">
-            <span className="v2-system-label">Table format</span>
-            <strong>Apache Iceberg</strong>
-          </div>
-          <div className="v2-stack-connector" />
-          <div className="v2-system-node v2-system-node-new">
-            <span className="v2-system-label">Catalog</span>
-            <strong>Polaris</strong>
-          </div>
+        <div className="v2-migration-step v2-migration-step-two">
+          <b>02</b>
+          <span>preserve compatibility</span>
+        </div>
+        <div className="v2-migration-step v2-migration-step-three">
+          <b>03</b>
+          <span>shift reads</span>
         </div>
       </div>
 
-      <div className="v2-migration-foot">
-        <span>Phased migration, not a flag day</span>
-        <strong>~90% <small>compute reduction</small></strong>
+      <div className="v2-migration-stack">
+        <div>
+          <span>Execution</span>
+          <strong>Apache Spark</strong>
+        </div>
+        <i />
+        <div>
+          <span>Table format</span>
+          <strong>Apache Iceberg</strong>
+        </div>
+        <i />
+        <div>
+          <span>Catalog</span>
+          <strong>Polaris</strong>
+        </div>
       </div>
     </div>
   )
 }
 
-function OpenSourceLedger() {
+function SagaVisual() {
+  const services = ['prepare', 'metadata', 'content', 'workbook', 'publish', 'audit', 'finalize']
+
   return (
-    <section className="v2-oss" id="open-source">
-      <div className="v2-oss-inner">
-        <div className="v2-section-top v2-reveal">
-          <span className="v2-section-index">03</span>
-          <span className="v2-section-label">Working in public · Apache ecosystem</span>
-          <span className="v2-section-year">2026</span>
+    <div className="v2-saga-visual" aria-label="Seven-service distributed Saga with compensation">
+      <div className="v2-saga-path">
+        {services.map((service, index) => (
+          <div className="v2-saga-service" key={service}>
+            <span>{String(index + 1).padStart(2, '0')}</span>
+            <strong>{service}</strong>
+            <i className={index < 4 ? 'is-complete' : index === 4 ? 'is-failure' : ''} />
+          </div>
+        ))}
+      </div>
+
+      <div className="v2-saga-compensation">
+        <span>failure at service 05</span>
+        <div>
+          <i />
+          <strong>compensate</strong>
+          <i />
+          <i />
+          <i />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function WorkCard({ index, eyebrow, title, accent, description, metrics, tags, children, className = '' }) {
+  return (
+    <article className={'v2-work-card v2-reveal ' + className}>
+      <div className="v2-work-card-head">
+        <div>
+          <span className="v2-work-index">{index}</span>
+          <span className="v2-work-eyebrow">{eyebrow}</span>
+        </div>
+        <span className="v2-work-year">HighRadius · Data Platform</span>
+      </div>
+
+      <div className="v2-work-card-grid">
+        <div className="v2-work-copy">
+          <h3>
+            {title}
+            {accent && <span>{accent}</span>}
+          </h3>
+          <p>{description}</p>
+
+          <div className="v2-work-tags">
+            {tags.map((tag) => <span key={tag}>{tag}</span>)}
+          </div>
         </div>
 
-        <div className="v2-oss-layout">
-          <div className="v2-oss-intro v2-reveal">
-            <p className="v2-oss-overline">Open source</p>
-            <h2>
-              The stack doesn’t end
-              <span>at the API.</span>
-            </h2>
-            <p className="v2-oss-copy">
-              I contribute where the abstraction gets interesting: Spark-native execution,
-              Flight SQL clients, and Iceberg row-level write infrastructure.
+        <div className="v2-work-side">
+          <div className="v2-work-metrics">
+            {metrics.map((metric) => (
+              <div key={metric.label}>
+                <strong>{metric.value}</strong>
+                <span>{metric.label}</span>
+              </div>
+            ))}
+          </div>
+          {children}
+        </div>
+      </div>
+    </article>
+  )
+}
+
+function OpenSourceSection() {
+  return (
+    <section className="v2-section v2-oss" id="open-source">
+      <div className="v2-container">
+        <div className="v2-section-heading v2-reveal">
+          <span>03 · Open source</span>
+          <h2>Working closer to the engine.</h2>
+          <p>
+            Recent work across native Spark execution, Arrow Flight SQL clients,
+            and Iceberg row-level write infrastructure.
+          </p>
+        </div>
+
+        <div className="v2-oss-grid">
+          {OSS_GROUPS.map((group) => (
+            <article className="v2-oss-group v2-reveal" key={group.name}>
+              <div className="v2-oss-head">
+                <span>{group.focus}</span>
+                <h3>{group.name}</h3>
+              </div>
+
+              <div className="v2-oss-items">
+                {group.items.map((item) => (
+                  <a href={item.href} target="_blank" rel="noreferrer" className="v2-oss-item" key={item.pr}>
+                    <span className="v2-oss-pr">{item.pr}</span>
+                    <span className="v2-oss-title">{item.title}</span>
+                    <span className={'v2-oss-status ' + (item.status === 'Merged' ? 'is-merged' : 'is-review')}>
+                      <i />
+                      {item.status}
+                    </span>
+                    <ArrowIcon />
+                  </a>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <a className="v2-inline-link v2-reveal" href={GITHUB} target="_blank" rel="noreferrer">
+          See everything on GitHub
+          <ArrowIcon />
+        </a>
+      </div>
+    </section>
+  )
+}
+
+function RedisSection() {
+  return (
+    <section className="v2-section v2-built">
+      <div className="v2-container">
+        <div className="v2-built-grid">
+          <div className="v2-built-copy v2-reveal">
+            <span>04 · From first principles</span>
+            <h2>Sometimes I rebuild the system to understand it.</h2>
+            <p>
+              redis-java is a Redis-compatible server built around Netty and RESP,
+              including replication, transactions, streams, persistence, and hundreds of tests.
             </p>
-            <a className="v2-inline-link" href={GITHUB} target="_blank" rel="noreferrer">
-              github.com/unikdahal
+            <a className="v2-inline-link" href="https://github.com/unikdahal/redis-java" target="_blank" rel="noreferrer">
+              Explore redis-java
               <ArrowIcon />
             </a>
           </div>
 
-          <div className="v2-oss-ledger">
-            {OSS_GROUPS.map((group) => (
-              <div className="v2-oss-group v2-reveal" key={group.repo}>
-                <div className="v2-oss-group-head">
-                  <div>
-                    <span>{group.eyebrow}</span>
-                    <h3>{group.repo}</h3>
-                  </div>
-                  <span className="v2-oss-count">{String(group.items.length).padStart(2, '0')}</span>
-                </div>
+          <div className="v2-terminal v2-reveal" aria-label="Redis protocol example">
+            <div className="v2-terminal-top">
+              <span>RESP / session</span>
+              <i />
+            </div>
+            <pre>
+              <code>{`> SET engineer unik
++OK
 
-                <div className="v2-oss-items">
-                  {group.items.map((item) => {
-                    const merged = item.status === 'Merged'
-                    return (
-                      <a className="v2-oss-item" href={item.href} target="_blank" rel="noreferrer" key={item.pr}>
-                        <span className="v2-oss-pr">{item.pr}</span>
-                        <span className="v2-oss-title">{item.title}</span>
-                        <span className={'v2-oss-status ' + (merged ? 'is-merged' : 'is-review')}>
-                          <i />
-                          {item.status}
-                        </span>
-                        <ArrowIcon />
-                      </a>
-                    )
-                  })}
-                </div>
-              </div>
-            ))}
+> GET engineer
+$4
+unik
+
+> INFO replication
+role:master
+connected_slaves:1`}</code>
+            </pre>
+            <div className="v2-terminal-foot">
+              <span>Netty</span>
+              <span>PSYNC2</span>
+              <span>RDB</span>
+              <span>Streams</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function ExperienceSection() {
+  return (
+    <section className="v2-section v2-experience">
+      <div className="v2-container">
+        <div className="v2-section-heading v2-section-heading-compact v2-reveal">
+          <span>05 · Experience</span>
+          <h2>The short version.</h2>
+        </div>
+
+        <div className="v2-experience-list">
+          <div className="v2-experience-row v2-reveal">
+            <span>2024 — now</span>
+            <strong>HighRadius</strong>
+            <p>Software Development Engineer · Data Platform</p>
+          </div>
+          <div className="v2-experience-row v2-reveal">
+            <span>2024</span>
+            <strong>ImmiHealth</strong>
+            <p>Backend Engineer · telemedicine systems</p>
+          </div>
+          <div className="v2-experience-row v2-reveal">
+            <span>2021 — 2025</span>
+            <strong>KIIT</strong>
+            <p>B.Tech Computer Science · Financial Economics minor</p>
           </div>
         </div>
       </div>
@@ -378,16 +488,12 @@ export default function PortfolioV2() {
           }
         })
       },
-      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+      { threshold: 0.08, rootMargin: '0px 0px -7% 0px' },
     )
 
     nodes.forEach((node) => observer.observe(node))
     return () => observer.disconnect()
   }, [])
-
-  const toggleTheme = () => {
-    setTheme((current) => (current === 'dark' ? 'light' : 'dark'))
-  }
 
   return (
     <main className="v2-shell" data-v2-theme={theme}>
@@ -397,218 +503,163 @@ export default function PortfolioV2() {
           name="description"
           content="Unik Dahal builds data infrastructure, query execution systems, and distributed backends across Spark, Iceberg, Arrow, and Apache open source."
         />
-        <meta name="theme-color" content={theme === 'dark' ? '#0d121a' : '#f3f5f8'} />
+        <meta name="theme-color" content={theme === 'dark' ? '#101521' : '#f4f6fa'} />
       </Helmet>
 
       <section className="v2-hero">
+        <SystemField />
+
         <header className="v2-nav">
-          <a className="v2-brand" href="/v2/" aria-label="Unik Dahal, V2 home">
+          <a className="v2-brand" href="/v2/" aria-label="Unik Dahal home">
             <span className="v2-brand-mark">u.</span>
-            <span className="v2-brand-name">Unik Dahal</span>
+            <span>Unik Dahal</span>
           </a>
 
           <div className="v2-nav-right">
             <nav className="v2-nav-links" aria-label="Portfolio navigation">
-              <a href="#selected-work">Work</a>
+              <a href="#work">Work</a>
               <a href="#open-source">Open source</a>
               <a href="/blog">Writing</a>
-              <a className="v2-nav-v1" href="/">V1</a>
+              <a href="/">V1</a>
             </nav>
-
             <button
               className="v2-theme-toggle"
               type="button"
-              onClick={toggleTheme}
+              onClick={() => setTheme((value) => value === 'dark' ? 'light' : 'dark')}
               aria-label={'Switch to ' + (theme === 'dark' ? 'light' : 'dark') + ' mode'}
-              title={'Switch to ' + (theme === 'dark' ? 'light' : 'dark') + ' mode'}
             >
               <ThemeIcon theme={theme} />
             </button>
           </div>
         </header>
 
-        <div className="v2-hero-ambient" aria-hidden="true" />
-        <DataPathVisual />
-
-        <div className="v2-hero-inner">
-          <div className="v2-hero-kicker">
-            <span className="v2-status-dot" />
-            <span>Data infrastructure · distributed systems</span>
+        <div className="v2-hero-content">
+          <div className="v2-hero-eyebrow">
+            <span />
+            Data infrastructure · distributed systems
           </div>
 
-          <h1 className="v2-hero-title">
+          <h1>
             I build systems
             <span>that <em>move</em> data.</span>
           </h1>
 
-          <div className="v2-hero-bottom">
-            <p className="v2-hero-intro">
-              I’m Unik, a software engineer working across query execution,
-              lakehouse infrastructure, and distributed backends at production scale.
+          <div className="v2-hero-support">
+            <p>
+              I’m Unik, a software engineer working on query execution,
+              lakehouse infrastructure, and distributed backends.
             </p>
 
-            <div className="v2-hero-actions">
-              <a className="v2-primary-link" href="#selected-work">
+            <div className="v2-hero-links">
+              <a className="v2-hero-primary" href="#work">
                 Selected work
                 <ArrowIcon />
               </a>
-              <a className="v2-text-link" href="mailto:unikdahal03@gmail.com">Email me</a>
+              <a href={GITHUB} target="_blank" rel="noreferrer">GitHub</a>
             </div>
+          </div>
+
+          <div className="v2-hero-meta">
+            <span>HighRadius · Data Platform</span>
+            <i />
+            <span>Hyderabad, India · from Nepal</span>
           </div>
         </div>
 
-        <div className="v2-hero-rail">
-          <div>
-            <span className="v2-rail-label">Working at</span>
-            <strong>HighRadius · Data Platform</strong>
-          </div>
-          <div>
-            <span className="v2-rail-label">Working with</span>
-            <strong>Spark · Iceberg · Arrow · DataFusion</strong>
-          </div>
-          <div>
-            <span className="v2-rail-label">Based in</span>
-            <strong>Hyderabad · from Nepal</strong>
-          </div>
-        </div>
+        <a className="v2-scroll-cue" href="#work" aria-label="Scroll to selected work">
+          <span>Explore</span>
+          <i />
+        </a>
       </section>
 
-      <section className="v2-proof-strip" aria-label="Selected impact">
-        <div className="v2-proof-inner">
-          <div className="v2-proof-item">
-            <strong>~1.5s → ~90ms</strong>
-            <span>fixed query overhead</span>
-          </div>
-          <div className="v2-proof-item">
-            <strong>20M+</strong>
-            <span>tables in migration scope</span>
-          </div>
-          <div className="v2-proof-item">
-            <strong>~90%</strong>
-            <span>compute reduction</span>
-          </div>
-        </div>
-      </section>
-
-      <section className="v2-work" id="selected-work">
-        <div className="v2-work-inner">
-          <div className="v2-section-top v2-reveal">
-            <span className="v2-section-index">01</span>
-            <span className="v2-section-label">Selected work · query infrastructure</span>
-            <span className="v2-section-year">2025—26</span>
-          </div>
-
-          <div className="v2-work-title-grid">
-            <div className="v2-work-heading v2-reveal">
-              <p className="v2-work-overline">The query was fast.</p>
-              <h2>
-                <span>1.5 seconds</span>
-                wasn’t the query.
-              </h2>
-            </div>
-
-            <div className="v2-work-metric v2-reveal">
-              <span>Fixed overhead</span>
-              <strong>~90<small>ms</small></strong>
-              <p>after moving the client path to ADBC Flight SQL with connection pooling.</p>
-            </div>
-          </div>
-
-          <QueryPathDiagram />
-
-          <div className="v2-work-story">
-            <div className="v2-work-story-lead v2-reveal">
-              <span className="v2-story-label">The constraint</span>
-              <p>
-                Analytical queries were paying roughly 1.5 seconds before useful execution work
-                even began. The bottleneck lived in the transport path, not in the query itself.
-              </p>
-            </div>
-
-            <div className="v2-work-story-body v2-reveal">
-              <p>
-                I owned the move from the JDBC/Thrift path to an ADBC Flight SQL client,
-                including connection pooling and the surrounding query-path changes.
-                The result was a much thinner handoff into Spark: roughly 90 ms of fixed
-                overhead instead of ~1.5 seconds.
-              </p>
-
-              <div className="v2-work-tags" aria-label="Technologies used">
-                <span>Arrow Flight SQL</span>
-                <span>ADBC</span>
-                <span>Apache Spark</span>
-                <span>Kyuubi</span>
-              </div>
-            </div>
-          </div>
-
-          <a className="v2-next-chapter v2-reveal" href="#lakehouse">
-            <span>02</span>
-            <p>Changing the analytical engine</p>
-            <ArrowIcon />
-          </a>
-        </div>
-      </section>
-
-      <section className="v2-migration" id="lakehouse">
-        <div className="v2-migration-inner">
-          <div className="v2-section-top v2-reveal">
-            <span className="v2-section-index">02</span>
-            <span className="v2-section-label">Selected work · lakehouse migration</span>
-            <span className="v2-section-year">2025—26</span>
-          </div>
-
-          <div className="v2-migration-heading">
-            <div className="v2-migration-number v2-reveal">
-              <strong>20M+</strong>
-              <span>tables in scope</span>
-            </div>
-
-            <div className="v2-migration-title v2-reveal">
-              <p>Phased, compatibility-first migration</p>
-              <h2>
-                Changing the engine
-                <span>without changing the product.</span>
-              </h2>
-            </div>
-          </div>
-
-          <MigrationVisual />
-
-          <div className="v2-migration-story">
-            <p className="v2-migration-lead v2-reveal">
-              The hard part wasn’t standing up Spark. It was moving a live analytical product
-              while keeping existing workflows behaving as if nothing underneath had changed.
+      <section className="v2-section v2-work-section" id="work">
+        <div className="v2-container">
+          <div className="v2-section-heading v2-reveal">
+            <span>01 · Selected work</span>
+            <h2>Production systems, not portfolio demos.</h2>
+            <p>
+              A few pieces of infrastructure where the interesting work lived
+              below the feature surface.
             </p>
+          </div>
 
-            <div className="v2-migration-details v2-reveal">
-              <p>
-                The migration moved ingestion toward Spark and Iceberg first, retained compatibility
-                while reads and user actions still crossed the old path, and progressively shifted
-                analytical execution onto the lakehouse stack. The resulting architecture cut
-                compute materially while preserving the product contract during the transition.
-              </p>
-              <div className="v2-work-tags">
-                <span>Apache Spark</span>
-                <span>Apache Iceberg</span>
-                <span>Polaris</span>
-                <span>Snowflake</span>
-              </div>
-            </div>
+          <div className="v2-work-stack">
+            <WorkCard
+              index="01"
+              eyebrow="Query infrastructure"
+              title="1.5 seconds"
+              accent="wasn’t the query."
+              description="The fixed cost lived in the transport path. I owned the move from JDBC/Thrift to an ADBC Flight SQL client with connection pooling, taking fixed per-query overhead to roughly 90 ms."
+              metrics={[
+                { value: '~90ms', label: 'fixed overhead after migration' },
+                { value: '~15×', label: 'less transport overhead' },
+              ]}
+              tags={['Arrow Flight SQL', 'ADBC', 'Apache Spark', 'Kyuubi']}
+            >
+              <QueryVisual />
+            </WorkCard>
+
+            <WorkCard
+              index="02"
+              eyebrow="Lakehouse migration"
+              title="Changing the engine"
+              accent="without changing the product."
+              description="A phased move from Snowflake toward Spark + Iceberg: ingestion moved first, compatibility had to hold across both worlds, and analytical execution shifted progressively rather than through a flag-day cutover."
+              metrics={[
+                { value: '20M+', label: 'tables in migration scope' },
+                { value: '~90%', label: 'compute reduction' },
+              ]}
+              tags={['Apache Spark', 'Apache Iceberg', 'Polaris', 'Snowflake']}
+              className="v2-work-card-migration"
+            >
+              <MigrationVisual />
+            </WorkCard>
+
+            <WorkCard
+              index="03"
+              eyebrow="Distributed reliability"
+              title="Failure should"
+              accent="be reversible."
+              description="A seven-service import/export flow needed to survive partial failure. I designed the orchestration around a distributed Saga with compensating actions and explicit ownership of rollback."
+              metrics={[
+                { value: '7', label: 'services in the workflow' },
+                { value: '~70%', label: 'fewer related incidents' },
+              ]}
+              tags={['Saga', 'Kafka', 'Spring', 'Object storage']}
+              className="v2-work-card-saga"
+            >
+              <SagaVisual />
+            </WorkCard>
           </div>
         </div>
       </section>
 
-      <OpenSourceLedger />
+      <OpenSourceSection />
+      <RedisSection />
+      <ExperienceSection />
 
-      <div className="v2-preview-footer">
-        <span>Unik Dahal · Portfolio V2</span>
-        <div>
-          <a href={GITHUB} target="_blank" rel="noreferrer">GitHub</a>
-          <a href={LINKEDIN} target="_blank" rel="noreferrer">LinkedIn</a>
-          <a href="/blog">Writing</a>
+      <footer className="v2-footer">
+        <div className="v2-container">
+          <div className="v2-footer-top">
+            <p>Still curious?</p>
+            <h2>Let’s talk systems.</h2>
+            <a href="mailto:unikdahal03@gmail.com">
+              unikdahal03@gmail.com
+              <ArrowIcon />
+            </a>
+          </div>
+
+          <div className="v2-footer-bottom">
+            <span>© 2026 Unik Dahal</span>
+            <div>
+              <a href={GITHUB} target="_blank" rel="noreferrer">GitHub</a>
+              <a href={LINKEDIN} target="_blank" rel="noreferrer">LinkedIn</a>
+              <a href="/blog">Writing</a>
+              <a href="/">V1</a>
+            </div>
+          </div>
         </div>
-      </div>
+      </footer>
     </main>
   )
 }
