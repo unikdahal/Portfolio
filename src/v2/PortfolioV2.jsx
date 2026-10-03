@@ -229,44 +229,59 @@ function QueryVisual() {
 
 function MigrationVisual() {
   return (
-    <div className="v2-migration-visual" aria-label="Phased migration from Snowflake to Spark and Iceberg">
-      <div className="v2-migration-old">
-        <span>Existing analytical path</span>
-        <strong>Snowflake</strong>
+    <div className="v2-migration-visual" aria-label="Phased migration from Snowflake to Spark, Iceberg, and Polaris">
+      <div className="v2-migration-visual-head">
+        <span>Migration path</span>
+        <span>compatibility-first · phased cutover</span>
       </div>
 
-      <div className="v2-migration-flow">
-        <div className="v2-migration-line">
-          <i className="v2-migration-packet" />
+      <div className="v2-migration-lanes">
+        <div className="v2-migration-lane v2-migration-lane-old">
+          <span className="v2-migration-lane-label">Before</span>
+          <div className="v2-migration-lane-content">
+            <strong>Snowflake</strong>
+            <span>warehouse path</span>
+          </div>
         </div>
-        <div className="v2-migration-step v2-migration-step-one">
-          <b>01</b>
-          <span>move ingestion</span>
-        </div>
-        <div className="v2-migration-step v2-migration-step-two">
-          <b>02</b>
-          <span>preserve compatibility</span>
-        </div>
-        <div className="v2-migration-step v2-migration-step-three">
-          <b>03</b>
-          <span>shift reads</span>
-        </div>
-      </div>
 
-      <div className="v2-migration-stack">
-        <div>
-          <span>Execution</span>
-          <strong>Apache Spark</strong>
+        <div className="v2-migration-transition" aria-hidden="true">
+          <div className="v2-migration-transition-line">
+            <i className="v2-migration-packet" />
+          </div>
+          <div className="v2-migration-transition-steps">
+            <div>
+              <b>01</b>
+              <span>move ingestion</span>
+            </div>
+            <div>
+              <b>02</b>
+              <span>preserve compatibility</span>
+            </div>
+            <div>
+              <b>03</b>
+              <span>shift reads</span>
+            </div>
+          </div>
         </div>
-        <i />
-        <div>
-          <span>Table format</span>
-          <strong>Apache Iceberg</strong>
-        </div>
-        <i />
-        <div>
-          <span>Catalog</span>
-          <strong>Polaris</strong>
+
+        <div className="v2-migration-lane v2-migration-lane-new">
+          <span className="v2-migration-lane-label">After</span>
+          <div className="v2-migration-stack-row">
+            <div>
+              <span>Execution</span>
+              <strong>Spark</strong>
+            </div>
+            <i />
+            <div>
+              <span>Table format</span>
+              <strong>Iceberg</strong>
+            </div>
+            <i />
+            <div>
+              <span>Catalog</span>
+              <strong>Polaris</strong>
+            </div>
+          </div>
         </div>
       </div>
     </div>
