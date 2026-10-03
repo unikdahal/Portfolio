@@ -1,17 +1,13 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useReveal } from '../../hooks'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import {
-  vscDarkPlus,
-  oneLight,
-} from 'react-syntax-highlighter/dist/esm/styles/prism'
+import { vscDarkPlus, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import { Copy, Check, Link2 } from 'lucide-react'
 import { Helmet } from 'react-helmet-async'
 
 const postModules = import.meta.glob('../../content/blog/*.mdx')
-const postModulesEager = import.meta.glob('../../content/blog/*.mdx', {
-  eager: true,
-})
+const postModulesEager = import.meta.glob('../../content/blog/*.mdx', { eager: true })
 
 function getSeriesParts(seriesName) {
   return Object.entries(postModulesEager)
@@ -19,22 +15,19 @@ function getSeriesParts(seriesName) {
       slug: path.split('/').pop().replace('.mdx', ''),
       ...(mod.frontmatter || {}),
     }))
-    .filter((p) => p.series === seriesName)
+    .filter(p => p.series === seriesName)
     .sort((a, b) => (a.part || 0) - (b.part || 0))
 }
 
 function useDocTheme() {
   const [theme, setTheme] = useState(
-    () => document.documentElement.getAttribute('data-theme') || 'light',
+    () => document.documentElement.getAttribute('data-theme') || 'light'
   )
   useEffect(() => {
     const obs = new MutationObserver(() =>
-      setTheme(document.documentElement.getAttribute('data-theme') || 'light'),
+      setTheme(document.documentElement.getAttribute('data-theme') || 'light')
     )
-    obs.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['data-theme'],
-    })
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
     return () => obs.disconnect()
   }, [])
   return theme
@@ -63,13 +56,11 @@ function useTOC(PostComponent) {
       const prose = document.querySelector('.prose')
       if (!prose) return
       const els = prose.querySelectorAll('h2[id], h3[id]')
-      setHeadings(
-        Array.from(els).map((el) => ({
-          id: el.id,
-          text: el.textContent.replace(/#\s*$/, '').trim(),
-          level: el.tagName === 'H2' ? 2 : 3,
-        })),
-      )
+      setHeadings(Array.from(els).map(el => ({
+        id: el.id,
+        text: el.textContent.replace(/#\s*$/, '').trim(),
+        level: el.tagName === 'H2' ? 2 : 3,
+      })))
     }, 150)
     return () => clearTimeout(timer)
   }, [PostComponent])
@@ -81,15 +72,15 @@ function useActiveHeading(headings) {
   useEffect(() => {
     if (!headings.length) return
     const obs = new IntersectionObserver(
-      (entries) => {
+      entries => {
         const visible = entries
-          .filter((e) => e.isIntersecting)
+          .filter(e => e.isIntersecting)
           .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
         if (visible.length) setActive(visible[0].target.id)
       },
-      { rootMargin: '-10% 0px -80% 0px', threshold: 0 },
+      { rootMargin: '-10% 0px -80% 0px', threshold: 0 }
     )
-    headings.forEach((h) => {
+    headings.forEach(h => {
       const el = document.getElementById(h.id)
       if (el) obs.observe(el)
     })
@@ -121,28 +112,21 @@ function extractText(node) {
 }
 
 function toSlug(text) {
-  return text
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim()
+  return text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').trim()
 }
 
 function parseHighlightLines(str) {
   if (!str) return new Set()
   const set = new Set()
-  String(str)
-    .split(',')
-    .forEach((part) => {
-      part = part.trim()
-      if (part.includes('-')) {
-        const [a, b] = part.split('-').map(Number)
-        for (let i = a; i <= b; i++) set.add(i)
-      } else if (part) {
-        set.add(Number(part))
-      }
-    })
+  String(str).split(',').forEach(part => {
+    part = part.trim()
+    if (part.includes('-')) {
+      const [a, b] = part.split('-').map(Number)
+      for (let i = a; i <= b; i++) set.add(i)
+    } else if (part) {
+      set.add(Number(part))
+    }
+  })
   return set
 }
 
@@ -151,13 +135,7 @@ function AnchoredH2({ children, ...p }) {
   return (
     <h2 id={id} className="mdx-h2" {...p}>
       {children}
-      <a
-        href={`#${id}`}
-        className="mdx-anchor"
-        aria-label={`Link to ${extractText(children)}`}
-      >
-        #
-      </a>
+      <a href={`#${id}`} className="mdx-anchor" aria-hidden="true">#</a>
     </h2>
   )
 }
@@ -167,22 +145,16 @@ function AnchoredH3({ children, ...p }) {
   return (
     <h3 id={id} className="mdx-h3" {...p}>
       {children}
-      <a
-        href={`#${id}`}
-        className="mdx-anchor"
-        aria-label={`Link to ${extractText(children)}`}
-      >
-        #
-      </a>
+      <a href={`#${id}`} className="mdx-anchor" aria-hidden="true">#</a>
     </h3>
   )
 }
 
 const CALLOUT_META = {
-  note: { icon: 'ℹ', label: 'Note' },
-  tip: { icon: '◆', label: 'Tip' },
+  note:    { icon: 'ℹ', label: 'Note' },
+  tip:     { icon: '◆', label: 'Tip' },
   warning: { icon: '⚠', label: 'Warning' },
-  danger: { icon: '✕', label: 'Danger' },
+  danger:  { icon: '✕', label: 'Danger' },
 }
 
 function Callout({ type = 'note', title, children }) {
@@ -207,7 +179,7 @@ function MermaidBlock({ children }) {
   useEffect(() => {
     const code = String(children).trim()
     setLoading(true)
-    import('mermaid').then((m) => {
+    import('mermaid').then(m => {
       const mermaid = m.default
       mermaid.initialize({
         startOnLoad: false,
@@ -215,29 +187,17 @@ function MermaidBlock({ children }) {
         securityLevel: 'loose',
       })
       idRef.current = `mermaid-${Math.random().toString(36).slice(2)}`
-      mermaid
-        .render(idRef.current, code)
-        .then(({ svg: s }) => {
-          setSvg(s)
-          setLoading(false)
-        })
+      mermaid.render(idRef.current, code)
+        .then(({ svg: s }) => { setSvg(s); setLoading(false) })
         .catch(() => setLoading(false))
     })
   }, [children, theme])
 
-  if (loading)
-    return <div className="mdx-mermaid-loading">Rendering diagram...</div>
-  return (
-    <div className="mdx-mermaid" dangerouslySetInnerHTML={{ __html: svg }} />
-  )
+  if (loading) return <div className="mdx-mermaid-loading">Rendering diagram...</div>
+  return <div className="mdx-mermaid" dangerouslySetInnerHTML={{ __html: svg }} />
 }
 
-function CodeBlock({
-  children,
-  className,
-  title,
-  'data-highlight': highlight,
-}) {
+function CodeBlock({ children, className, title, 'data-highlight': highlight }) {
   const [copied, setCopied] = useState(false)
   const theme = useDocTheme()
   const language = className?.replace('language-', '') || 'text'
@@ -247,14 +207,10 @@ function CodeBlock({
 
   const highlightSet = parseHighlightLines(highlight)
 
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(code)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch {
-      setCopied(false)
-    }
+  const copy = () => {
+    navigator.clipboard.writeText(code)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   return (
@@ -273,28 +229,22 @@ function CodeBlock({
         style={theme === 'dark' ? vscDarkPlus : oneLight}
         PreTag="div"
         wrapLines={highlightSet.size > 0}
-        lineProps={
-          highlightSet.size > 0
-            ? (ln) => {
-                const hl = highlightSet.has(ln)
-                return {
-                  style: {
-                    display: 'block',
-                    backgroundColor: hl
-                      ? theme === 'dark'
-                        ? 'rgba(255,255,255,.06)'
-                        : 'rgba(0,0,0,.04)'
-                      : 'transparent',
-                    borderLeft: hl
-                      ? '3px solid var(--accent)'
-                      : '3px solid transparent',
-                    paddingLeft: '6px',
-                    marginLeft: '-9px',
-                  },
-                }
+        lineProps={highlightSet.size > 0
+          ? ln => {
+              const hl = highlightSet.has(ln)
+              return {
+                style: {
+                  display: 'block',
+                  backgroundColor: hl
+                    ? (theme === 'dark' ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.04)')
+                    : 'transparent',
+                  borderLeft: hl ? '3px solid var(--accent)' : '3px solid transparent',
+                  paddingLeft: '6px',
+                  marginLeft: '-9px',
+                },
               }
-            : undefined
-        }
+            }
+          : undefined}
         customStyle={{
           margin: 0,
           padding: '20px 24px',
@@ -315,16 +265,14 @@ function TableOfContents({ headings, active }) {
     <nav className="bp-toc" aria-label="Table of contents">
       <div className="bp-toc-label">On this page</div>
       <ul className="bp-toc-list">
-        {headings.map((h) => (
+        {headings.map(h => (
           <li key={h.id} className={`bp-toc-item level-${h.level}`}>
             <a
               href={`#${h.id}`}
               className={`bp-toc-link${active === h.id ? ' active' : ''}`}
-              onClick={(e) => {
+              onClick={e => {
                 e.preventDefault()
-                document
-                  .getElementById(h.id)
-                  ?.scrollIntoView({ behavior: 'smooth' })
+                document.getElementById(h.id)?.scrollIntoView({ behavior: 'smooth' })
               }}
             >
               {h.text}
@@ -336,13 +284,11 @@ function TableOfContents({ headings, active }) {
   )
 }
 
+
 function FloatingReadTime({ minutes, progress }) {
   const visible = minutes !== null && progress > 5 && progress < 95
   return (
-    <div
-      className={`bp-float-time${visible ? ' visible' : ''}`}
-      aria-live="polite"
-    >
+    <div className={`bp-float-time${visible ? ' visible' : ''}`} aria-live="polite">
       {minutes}
     </div>
   )
@@ -350,16 +296,12 @@ function FloatingReadTime({ minutes, progress }) {
 
 function ShareBar({ title }) {
   const [copied, setCopied] = useState(false)
-  const url = `https://www.unikdahal.com.np${window.location.pathname}`
+  const url = window.location.href
 
-  const copyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(url)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch {
-      setCopied(false)
-    }
+  const copyLink = () => {
+    navigator.clipboard.writeText(url)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`
@@ -371,20 +313,9 @@ function ShareBar({ title }) {
         {copied ? <Check size={13} /> : <Link2 size={13} />}
         <span>{copied ? 'Copied!' : 'Copy link'}</span>
       </button>
-      <a
-        href={tweetUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="bp-share-btn"
-      >
-        <svg
-          width="13"
-          height="13"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.728-8.835L1.254 2.25H8.08l4.262 5.632L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z" />
+      <a href={tweetUrl} target="_blank" rel="noopener noreferrer" className="bp-share-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.728-8.835L1.254 2.25H8.08l4.262 5.632L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
         </svg>
         <span>Share on X</span>
       </a>
@@ -395,22 +326,18 @@ function ShareBar({ title }) {
 const mdxComponents = {
   h2: AnchoredH2,
   h3: AnchoredH3,
-  p: (p) => <p className="mdx-p" {...p} />,
-  ul: (p) => <ul className="mdx-ul" {...p} />,
-  ol: (p) => <ol className="mdx-ol" {...p} />,
-  li: (p) => <li className="mdx-li" {...p} />,
-  blockquote: (p) => <blockquote className="mdx-quote" {...p} />,
+  p:  p => <p  className="mdx-p"  {...p} />,
+  ul: p => <ul className="mdx-ul" {...p} />,
+  ol: p => <ol className="mdx-ol" {...p} />,
+  li: p => <li className="mdx-li" {...p} />,
+  blockquote: p => <blockquote className="mdx-quote" {...p} />,
   hr: () => <hr className="mdx-hr" />,
-  table: (p) => (
-    <div className="mdx-table-wrap">
-      <table className="mdx-table" {...p} />
-    </div>
-  ),
-  thead: (p) => <thead {...p} />,
-  tbody: (p) => <tbody {...p} />,
-  tr: (p) => <tr {...p} />,
-  th: (p) => <th className="mdx-th" {...p} />,
-  td: (p) => <td className="mdx-td" {...p} />,
+  table: p => <div className="mdx-table-wrap"><table className="mdx-table" {...p} /></div>,
+  thead: p => <thead {...p} />,
+  tbody: p => <tbody {...p} />,
+  tr:    p => <tr    {...p} />,
+  th:    p => <th className="mdx-th" {...p} />,
+  td:    p => <td className="mdx-td" {...p} />,
   pre: ({ children }) => {
     const childProps = children?.props || {}
     if (childProps.className?.includes('language-')) {
@@ -419,8 +346,7 @@ const mdxComponents = {
     return <pre className="mdx-pre">{children}</pre>
   },
   code: ({ className, ...props }) => {
-    if (className?.includes('language-'))
-      return <CodeBlock className={className} {...props} />
+    if (className?.includes('language-')) return <CodeBlock className={className} {...props} />
     return <code className="mdx-inline-code" {...props} />
   },
   Callout,
@@ -429,9 +355,7 @@ const mdxComponents = {
 function fmtLong(dateStr) {
   if (!dateStr) return ''
   return new Date(dateStr).toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
+    month: 'long', day: 'numeric', year: 'numeric',
   })
 }
 
@@ -444,6 +368,7 @@ export default function BlogPost() {
   const headings = useTOC(PostComponent)
   const activeHeading = useActiveHeading(headings)
   const wordCount = useWordCount(PostComponent)
+  useReveal([PostComponent])
 
   const minutesLeft = (() => {
     if (!wordCount || progress >= 95) return null
@@ -453,51 +378,30 @@ export default function BlogPost() {
   })()
 
   useEffect(() => {
-    let cancelled = false
-    setPostComponent(null)
-    setMeta(null)
-    const key = Object.keys(postModules).find(
-      (path) => path.split('/').pop() === `${slug}.mdx`,
-    )
-    if (!key) {
-      navigate('/blog', { replace: true })
-      return
-    }
+    const key = Object.keys(postModules).find(p => p.endsWith(`${slug}.mdx`))
+    if (!key) { navigate('/blog', { replace: true }); return }
     postModules[key]()
-      .then((mod) => {
-        if (cancelled) return
-        if (mod.frontmatter?.draft) {
-          navigate('/blog', { replace: true })
-          return
-        }
+      .then(mod => {
         setPostComponent(() => mod.default)
         setMeta(mod.frontmatter || {})
       })
-      .catch(() => {
-        if (!cancelled) navigate('/blog', { replace: true })
-      })
+      .catch(() => navigate('/blog', { replace: true }))
     window.scrollTo(0, 0)
-    return () => {
-      cancelled = true
-    }
-  }, [slug, navigate])
+  }, [slug])
 
   if (!PostComponent || !meta) {
     return (
       <div className="bp-loading wrap">
-        <p role="status">Loading the article…</p>
+        <div className="bp-loading-dot" />
       </div>
     )
   }
 
   const seriesParts = meta.series ? getSeriesParts(meta.series) : []
   const totalParts = seriesParts.length
-  const currentIdx = seriesParts.findIndex((p) => p.slug === slug)
+  const currentIdx = seriesParts.findIndex(p => p.slug === slug)
   const prevPart = currentIdx > 0 ? seriesParts[currentIdx - 1] : null
-  const nextPart =
-    currentIdx >= 0 && currentIdx < totalParts - 1
-      ? seriesParts[currentIdx + 1]
-      : null
+  const nextPart = currentIdx >= 0 && currentIdx < totalParts - 1 ? seriesParts[currentIdx + 1] : null
 
   const canonicalUrl = `https://www.unikdahal.com.np/blog/${slug}`
 
@@ -507,32 +411,22 @@ export default function BlogPost() {
         <title>{meta.title} — Unik Dahal</title>
         {meta.excerpt && <meta name="description" content={meta.excerpt} />}
         <meta property="og:title" content={meta.title} />
-        {meta.excerpt && (
-          <meta property="og:description" content={meta.excerpt} />
-        )}
+        {meta.excerpt && <meta property="og:description" content={meta.excerpt} />}
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="article" />
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content={meta.title} />
-        {meta.excerpt && (
-          <meta name="twitter:description" content={meta.excerpt} />
-        )}
+        {meta.excerpt && <meta name="twitter:description" content={meta.excerpt} />}
         <link rel="canonical" href={canonicalUrl} />
       </Helmet>
 
-      <div
-        className="bp-progress"
-        style={{ width: `${progress}%` }}
-        aria-hidden="true"
-      />
+      <div className="bp-progress" style={{ width: `${progress}%` }} aria-hidden="true" />
       <FloatingReadTime minutes={minutesLeft} progress={progress} />
 
       <TableOfContents headings={headings} active={activeHeading} />
 
       <header className="bp-header wrap reveal">
-        <Link to="/blog" className="bp-back">
-          All writing
-        </Link>
+        <Link to="/blog" className="bp-back">← Writing</Link>
 
         <div className="bp-meta-row">
           {meta.category && <span className="bp-cat">{meta.category}</span>}
@@ -560,13 +454,13 @@ export default function BlogPost() {
         <div className="bp-series-nav wrap reveal">
           <div className="bsn-label">In this series</div>
           <div className="bsn-parts">
-            {seriesParts.map((part) =>
+            {seriesParts.map(part =>
               part.draft ? (
                 <div key={part.slug} className="bsn-part draft">
                   <div className="bsn-dot draft" />
                   <span className="bsn-n">Part {part.part}</span>
                   <span className="bsn-title">{part.title}</span>
-                  <span className="bsn-soon">In progress</span>
+                  <span className="bsn-soon">Soon</span>
                 </div>
               ) : (
                 <Link
@@ -574,16 +468,12 @@ export default function BlogPost() {
                   to={`/blog/${part.slug}`}
                   className={`bsn-part${part.slug === slug ? ' current' : ' pub'}`}
                 >
-                  <div
-                    className={`bsn-dot${part.slug === slug ? ' current' : ' pub'}`}
-                  />
+                  <div className={`bsn-dot${part.slug === slug ? ' current' : ' pub'}`} />
                   <span className="bsn-n">Part {part.part}</span>
                   <span className="bsn-title">{part.title}</span>
-                  {part.slug === slug && (
-                    <span className="bsn-you">Reading</span>
-                  )}
+                  {part.slug === slug && <span className="bsn-you">Reading</span>}
                 </Link>
-              ),
+              )
             )}
           </div>
         </div>
@@ -600,35 +490,29 @@ export default function BlogPost() {
           <div className="bp-nav-row">
             {prevPart && !prevPart.draft ? (
               <Link to={`/blog/${prevPart.slug}`} className="bp-nav-btn prev">
-                <span className="bp-nav-dir">Previous</span>
+                <span className="bp-nav-dir">← Previous</span>
                 <span className="bp-nav-title">{prevPart.title}</span>
               </Link>
-            ) : (
-              <div />
-            )}
+            ) : <div />}
             {nextPart ? (
               nextPart.draft ? (
                 <div className="bp-nav-btn next disabled">
-                  <span className="bp-nav-dir">Next</span>
+                  <span className="bp-nav-dir">Next →</span>
                   <span className="bp-nav-title">{nextPart.title}</span>
-                  <span className="bp-nav-soon">In progress</span>
+                  <span className="bp-nav-soon">Coming soon</span>
                 </div>
               ) : (
                 <Link to={`/blog/${nextPart.slug}`} className="bp-nav-btn next">
-                  <span className="bp-nav-dir">Next</span>
+                  <span className="bp-nav-dir">Next →</span>
                   <span className="bp-nav-title">{nextPart.title}</span>
                 </Link>
               )
-            ) : (
-              <div />
-            )}
+            ) : <div />}
           </div>
         )}
 
         <div className="bp-end">
-          <Link to="/blog" className="bp-back-link">
-            Back to writing
-          </Link>
+          <Link to="/blog" className="bp-back-link">← Back to Writing</Link>
         </div>
       </footer>
     </article>
