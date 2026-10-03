@@ -1,186 +1,169 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
+import { Search } from 'lucide-react'
 import Fuse from 'fuse.js'
-import { useReveal } from '../../hooks'
 
-const postModules = import.meta.glob('../../content/blog/*.mdx', { eager: true })
-
+const postModules = import.meta.glob('../../content/blog/*.mdx', {
+  eager: true,
+})
 const ALL_POSTS = Object.entries(postModules)
   .map(([path, mod]) => ({
     slug: path.split('/').pop().replace('.mdx', ''),
     ...(mod.frontmatter || {}),
   }))
   .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
-
+const publishedCount = ALL_POSTS.filter((post) => !post.draft).length
+const draftCount = ALL_POSTS.length - publishedCount
+const categories = [
+  'All',
+  ...new Set(ALL_POSTS.map((post) => post.category).filter(Boolean)),
+]
 const fuseIndex = new Fuse(ALL_POSTS, {
   keys: ['title', 'excerpt', 'category', 'series'],
   threshold: 0.35,
   minMatchCharLength: 2,
 })
 
-function fmt(dateStr) {
-  if (!dateStr) return ''
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    month: 'short', day: 'numeric', year: 'numeric',
-  })
-}
-
 export default function BlogIndex() {
-  useReveal([])
   const [query, setQuery] = useState('')
-  const [cat, setCat] = useState('All')
-
-  const categories = useMemo(() => {
-    const uniq = [...new Set(ALL_POSTS.map(p => p.category).filter(Boolean))]
-    return ['All', ...uniq]
-  }, [])
-
+  const [category, setCategory] = useState('All')
   const visible = useMemo(() => {
-    if (!query.trim()) {
-      return cat === 'All' ? ALL_POSTS : ALL_POSTS.filter(x => x.category === cat)
-    }
-    const results = fuseIndex.search(query).map(r => r.item)
-    return cat === 'All' ? results : results.filter(x => x.category === cat)
-  }, [query, cat])
-
-  const { seriesMap, standalone } = useMemo(() => {
-    const seriesMap = {}
-    const standalone = []
-    visible.forEach(p => {
-      if (p.series) {
-        if (!seriesMap[p.series]) seriesMap[p.series] = []
-        seriesMap[p.series].push(p)
-      } else {
-        standalone.push(p)
-      }
-    })
-    Object.values(seriesMap).forEach(parts =>
-      parts.sort((a, b) => (a.part || 0) - (b.part || 0))
+    const matches = query.trim()
+      ? fuseIndex.search(query.trim()).map((result) => result.item)
+      : ALL_POSTS
+    return matches.filter(
+      (post) => category === 'All' || post.category === category,
     )
-    return { seriesMap, standalone }
+  }, [query, category])
+  const series = useMemo(() => {
+    const groups = new Map()
+    for (const post of visible) {
+      const name = post.series || 'Other writing'
+      if (!groups.has(name)) groups.set(name, [])
+      groups.get(name).push(post)
+    }
+    for (const posts of groups.values())
+      posts.sort((a, b) => (a.part || 0) - (b.part || 0))
+    return [...groups.entries()]
   }, [visible])
-
-  const catCount = c =>
-    c === 'All' ? ALL_POSTS.length : ALL_POSTS.filter(p => p.category === c).length
 
   return (
     <div className="bi-page wrap">
-      <header className="bi-masthead reveal">
+      <Helmet>
+        <title>Writing | Unik Dahal</title>
+        <meta
+          name="description"
+          content="Notes on building systems, understanding protocols, and learning by reading the source. By Unik Dahal."
+        />
+        <meta property="og:title" content="Writing | Unik Dahal" />
+        <meta
+          property="og:description"
+          content="Notes on building systems, understanding protocols, and learning by reading the source."
+        />
+        <meta property="og:url" content="https://www.unikdahal.com.np/blog" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:title" content="Writing | Unik Dahal" />
+        <meta
+          name="twitter:description"
+          content="Notes on building systems, understanding protocols, and learning by reading the source."
+        />
+        <link rel="canonical" href="https://www.unikdahal.com.np/blog" />
+      </Helmet>
+      <header className="bi-masthead">
         <div className="bi-masthead-row">
-          <h1 className="bi-title">Writing</h1>
-          <span className="bi-total">{ALL_POSTS.length} articles</span>
+          <h1 className="bi-title">
+            Notes from
+            <br />
+            <em>the build.</em>
+          </h1>
+          <span className="bi-total">
+            {publishedCount} published
+            <br />
+            {draftCount} in progress
+          </span>
         </div>
         <p className="bi-subtitle">
-          Deep dives into systems, protocols, and data engineering.
+          Protocols, internals, and the things I learn by building them.
         </p>
       </header>
-
-      <div className="bi-controls reveal">
-        <div className="bi-cats">
-          {categories.map(c => (
+      <div className="bi-controls">
+        <div className="bi-cats" role="group" aria-label="Filter by category">
+          {categories.map((item) => (
             <button
-              key={c}
-              className={`bi-cat${cat === c ? ' active' : ''}`}
-              onClick={() => setCat(c)}
+              key={item}
+              className={`bi-cat${category === item ? ' active' : ''}`}
+              onClick={() => setCategory(item)}
+              aria-pressed={category === item}
             >
-              {c}
-              <span className="bi-cat-n">{catCount(c)}</span>
+              {item}
+              <span className="bi-cat-n">
+                {
+                  ALL_POSTS.filter(
+                    (post) => item === 'All' || post.category === item,
+                  ).length
+                }
+              </span>
             </button>
           ))}
         </div>
         <div className="bi-search-wrap">
-          <svg className="bi-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-          </svg>
+          <Search className="bi-search-icon" aria-hidden="true" />
           <input
             type="search"
-            placeholder="Search articles..."
+            aria-label="Search writing"
+            placeholder="Search writing…"
             value={query}
-            onChange={e => setQuery(e.target.value)}
+            onChange={(event) => setQuery(event.target.value)}
             className="bi-search"
           />
         </div>
       </div>
-
-      <div className="bi-body">
+      <div className="bi-body" aria-live="polite">
         {visible.length === 0 && (
-          <p className="bi-empty reveal">No articles match your filter.</p>
+          <p className="bi-empty">
+            No matches yet. Try another word or category.
+          </p>
         )}
-
-        {Object.entries(seriesMap).map(([name, parts]) => {
-          const allParts = ALL_POSTS
-            .filter(p => p.series === name)
-            .sort((a, b) => (a.part || 0) - (b.part || 0))
-
-          return (
-            <section className="bi-series reveal" key={name}>
-              <div className="bi-series-header">
-                <div className="bi-series-meta">
-                  <span className="bi-series-label">Series</span>
-                  <span className="bi-sep">·</span>
-                  <span className="bi-series-cat">{parts[0]?.category}</span>
-                  <span className="bi-sep">·</span>
-                  <span className="bi-series-count">{allParts.length} parts</span>
-                </div>
-                <h2 className="bi-series-name">{name}</h2>
+        {series.map(([name, parts]) => (
+          <section className="bi-series" key={name}>
+            <div className="bi-series-header">
+              <div className="bi-series-meta">
+                <span>{parts[0]?.series ? 'Series' : 'Articles'}</span>
+                <span aria-hidden="true">/</span>
+                <span>{parts[0]?.category}</span>
               </div>
-              <div className="bi-parts">
-                {allParts.map(part =>
-                  part.draft ? (
-                    <div key={part.slug} className="bi-part bi-part--draft">
-                      <div className="bi-part-indicator draft" />
-                      <div className="bi-part-body">
-                        <span className="bi-part-n">Part {part.part}</span>
-                        <span className="bi-part-title">{part.title}</span>
-                      </div>
-                      <span className="bi-part-soon">Soon</span>
+              <h2 className="bi-series-name">{name}</h2>
+            </div>
+            <div className="bi-parts">
+              {parts.map((part) =>
+                part.draft ? (
+                  <div key={part.slug} className="bi-part bi-part--draft">
+                    <div className="bi-part-body">
+                      <span className="bi-part-n">Part {part.part}</span>
+                      <span className="bi-part-title">{part.title}</span>
                     </div>
-                  ) : (
-                    <Link key={part.slug} to={`/blog/${part.slug}`} className="bi-part bi-part--pub">
-                      <div className="bi-part-indicator pub" />
-                      <div className="bi-part-body">
-                        <span className="bi-part-n">Part {part.part}</span>
-                        <span className="bi-part-title">{part.title}</span>
-                      </div>
-                      <div className="bi-part-right">
-                        <span className="bi-part-read">{part.readTime}</span>
-                        <span className="bi-part-arr">→</span>
-                      </div>
-                    </Link>
-                  )
-                )}
-              </div>
-            </section>
-          )
-        })}
-
-        {standalone.length > 0 && (
-          <section className="bi-standalone">
-            {Object.keys(seriesMap).length > 0 && (
-              <div className="sec-label reveal">Articles</div>
-            )}
-            <div className="bi-articles">
-              {standalone.map((post, i) => (
-                <Link key={post.slug} to={`/blog/${post.slug}`} className="bi-article reveal">
-                  <div className="bi-article-num">№{String(i + 1).padStart(2, '0')}</div>
-                  <div className="bi-article-body">
-                    <div className="bi-article-meta">
-                      {post.category && <span className="bi-article-cat">{post.category}</span>}
-                      <span className="bi-article-dot">·</span>
-                      <span className="bi-article-date">{fmt(post.date)}</span>
+                    <span className="bi-part-soon">In progress</span>
+                  </div>
+                ) : (
+                  <Link
+                    key={part.slug}
+                    to={`/blog/${part.slug}`}
+                    className="bi-part bi-part--pub"
+                  >
+                    <div className="bi-part-body">
+                      <span className="bi-part-n">
+                        {part.part ? `Part ${part.part}` : part.category}
+                      </span>
+                      <span className="bi-part-title">{part.title}</span>
                     </div>
-                    <h3 className="bi-article-title">{post.title}</h3>
-                    {post.excerpt && <p className="bi-article-excerpt">{post.excerpt}</p>}
-                  </div>
-                  <div className="bi-article-aside">
-                    <span className="bi-article-read">{post.readTime}</span>
-                    <span className="bi-article-arr">→</span>
-                  </div>
-                </Link>
-              ))}
+                    <span className="bi-part-right">{part.readTime}</span>
+                  </Link>
+                ),
+              )}
             </div>
           </section>
-        )}
+        ))}
       </div>
     </div>
   )
