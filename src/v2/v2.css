@@ -1692,11 +1692,6 @@
     height: 74px;
   }
 
-  .v2-nav-links a:nth-child(2),
-  .v2-nav-links a:nth-child(3) {
-    display: none;
-  }
-
   .v2-system-field {
     top: 76px;
     right: -30vw;
@@ -1767,10 +1762,11 @@
 
 @media (max-width: 620px) {
   .v2-nav-links {
-    gap: 18px;
+    gap: 16px;
+    font-size: 11px;
   }
 
-  .v2-nav-links a:nth-child(1) {
+  .v2-nav-links a:nth-child(2) {
     display: none;
   }
 
