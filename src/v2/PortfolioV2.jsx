@@ -516,12 +516,11 @@ export default function PortfolioV2() {
           </a>
 
           <div className="v2-nav-right">
-            <nav className="v2-nav-links" aria-label="Portfolio navigation">
+            <div className="v2-nav-links" role="navigation" aria-label="Portfolio navigation">
               <a href="#work">Work</a>
               <a href="#open-source">Open source</a>
               <a href="/blog">Writing</a>
-              <a href="/">V1</a>
-            </nav>
+            </div>
             <button
               className="v2-theme-toggle"
               type="button"
