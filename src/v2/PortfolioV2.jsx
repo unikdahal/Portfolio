@@ -373,7 +373,7 @@ function WorkCard({ index, eyebrow, title, accent, description, metrics, tags, c
           <div className="v2-work-metrics">
             {metrics.map((metric) => (
               <div key={metric.label}>
-                <strong>{metric.value}</strong>
+                <strong className={metric.value.length > 8 ? 'is-long' : ''}>{metric.value}</strong>
                 <span>{metric.label}</span>
               </div>
             ))}
