@@ -446,8 +446,8 @@ function RedisSection() {
             <span>05 · From first principles</span>
             <h2>Sometimes I rebuild the system to understand it.</h2>
             <p>
-              redis-java is a Redis-compatible server built around Netty and RESP,
-              including replication, transactions, streams, persistence, and hundreds of tests.
+              redis-java is a Redis-compatible server built in Java 25 around Netty and RESP,
+              including replication, transactions, streams, persistence, and 599 tests.
             </p>
             <a className="v2-inline-link" href="https://github.com/unikdahal/redis-java" target="_blank" rel="noreferrer">
               Explore redis-java
