@@ -10,6 +10,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'vite.config.js'
+      - 'scripts/**'
       - '.github/workflows/build.yml'
   pull_request:
     paths:
@@ -19,6 +20,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'vite.config.js'
+      - 'scripts/**'
 
 concurrency:
   group: build-main
@@ -42,3 +44,6 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Smoke check
+        run: node scripts/smoke-v2.mjs
