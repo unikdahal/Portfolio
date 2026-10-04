@@ -9,7 +9,7 @@ const BASE_LINKS = [
   { id: 'contact',    label: 'Contact' },
 ]
 
-export default function Navbar({ theme, onToggle }) {
+export default function Navbar({ theme, onToggle, homePath = '/' }) {
   const { pathname } = useLocation()
   const active = useActiveSection(['hero', 'experience', 'projects', 'skills', 'blog', 'contact'])
   const isBlog = pathname.startsWith('/blog')
@@ -17,7 +17,7 @@ export default function Navbar({ theme, onToggle }) {
   return (
     <nav>
       <div className="nav-inner">
-        <Link to="/" className="nav-brand">
+        <Link to={homePath} className="nav-brand">
           Unik Dahal
         </Link>
         <div className="nav-links">
