@@ -28,12 +28,15 @@ const checks = [
   [!home.includes('href="/v2'), 'homepage must not emit stale /v2 links'],
   [!cases.includes('href="/v2'), 'case studies must not emit stale /v2 links'],
   [!writing.includes('href="/v2'), 'writing must not emit stale /v2 links'],
+  [!cases.includes('Navigate to="/v2'), 'case studies must not redirect to the retired /v2 namespace'],
   [!home.includes('Previous version'), 'canonical V2 must not advertise the legacy portfolio'],
   [home.includes('https://www.unikdahal.com.np/'), 'homepage canonical URL must be root'],
   [cases.includes('https://www.unikdahal.com.np/work/'), 'case-study canonical URLs must use /work'],
   [writing.includes('https://www.unikdahal.com.np/writing'), 'writing canonical URLs must use /writing'],
   [fallback.includes("'/?/'"), 'GitHub Pages 404 fallback must preserve SPA deep links'],
   [index.includes('Restore path encoded by 404.html SPA redirect'), 'index must restore deep-link paths'],
+  [(await readFile('public/robots.txt', 'utf8')).includes('sitemap.xml'), 'robots.txt must advertise the sitemap'],
+  [(await readFile('public/sitemap.xml', 'utf8')).includes('/work/query-path'), 'sitemap must include canonical work routes'],
 ]
 
 const failed = checks.filter(([ok]) => !ok).map(([, message]) => message)
