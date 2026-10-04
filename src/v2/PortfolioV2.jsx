@@ -212,7 +212,7 @@ function SystemField() {
 
 function QueryVisual() {
   return (
-    <div className="v2-query-visual" aria-label="Fixed query overhead reduced from approximately 1.5 seconds to approximately 90 milliseconds">
+    <div className="v2-query-visual" role="img" aria-label="Fixed query overhead reduced from approximately 1.5 seconds to approximately 90 milliseconds">
       <div className="v2-query-caption">
         <span>Fixed transport overhead</span>
         <span>before / after</span>
@@ -257,7 +257,7 @@ function QueryVisual() {
 
 function MigrationVisual() {
   return (
-    <div className="v2-migration-visual" aria-label="Phased migration from Snowflake to Spark, Iceberg, and Polaris">
+    <div className="v2-migration-visual" role="img" aria-label="Phased migration from Snowflake to Spark, Iceberg, and Polaris">
       <div className="v2-migration-visual-head">
         <span>Migration path</span>
         <span>compatibility-first · phased cutover</span>
@@ -320,7 +320,7 @@ function SagaVisual() {
   const services = ['prepare', 'metadata', 'content', 'workbook', 'publish', 'audit', 'finalize']
 
   return (
-    <div className="v2-saga-visual" aria-label="Seven-service distributed Saga with compensation">
+    <div className="v2-saga-visual" role="img" aria-label="Seven-service distributed Saga with compensation">
       <div className="v2-saga-path">
         {services.map((service, index) => (
           <div className="v2-saga-service" key={service}>
@@ -398,7 +398,7 @@ function OpenSourceMap() {
   ]
 
   return (
-    <div className="v2-oss-map v2-reveal" aria-label="Open source focus areas">
+    <div className="v2-oss-map v2-reveal" role="img" aria-label="Open source focus areas">
       {tracks.map(([label, ...nodes]) => (
         <div className="v2-oss-map-row" key={label}>
           <span className="v2-oss-map-label">{label}</span>
