@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="18" fill="#101521"/>
+  <circle cx="46" cy="17" r="4" fill="#8985ff"/>
+  <text x="15" y="43" fill="#eef2f7" font-family="Georgia, serif" font-size="34" font-style="italic">u</text>
+</svg>
