@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Navigate, useParams } from 'react-router-dom'
 import './v2.css'
+import './writing.css'
 
 const postModules = import.meta.glob('../content/blog/*.mdx')
 const postModulesEager = import.meta.glob('../content/blog/*.mdx', { eager: true })
