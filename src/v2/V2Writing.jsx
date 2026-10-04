@@ -46,15 +46,15 @@ function ArrowIcon() {
 function V2Header({ theme, setTheme }) {
   return (
     <header className="v2-case-nav">
-      <a className="v2-brand" href="/v2/" aria-label="Back to portfolio">
+      <a className="v2-brand" href="/" aria-label="Back to portfolio">
         <span className="v2-brand-mark">u.</span>
         <span>Unik Dahal</span>
       </a>
 
       <div className="v2-case-nav-right">
-        <a href="/v2/#work">Work</a>
-        <a href="/v2/#open-source">Open source</a>
-        <a href="/v2/writing">Writing</a>
+        <a href="/#work">Work</a>
+        <a href="/#open-source">Open source</a>
+        <a href="/writing">Writing</a>
         <button
           className="v2-theme-toggle"
           type="button"
@@ -91,9 +91,9 @@ function WritingIndex({ theme, setTheme }) {
         <meta name="theme-color" content={theme === 'dark' ? '#101521' : '#f4f6fa'} />
         <meta property="og:title" content="Writing — Unik Dahal" />
         <meta property="og:description" content="Notes on systems, protocols, query infrastructure, and things understood by building them." />
-        <meta property="og:url" content="https://www.unikdahal.com.np/v2/writing" />
+        <meta property="og:url" content="https://www.unikdahal.com.np/writing" />
         <meta name="twitter:card" content="summary" />
-        <link rel="canonical" href="https://www.unikdahal.com.np/v2/writing" />
+        <link rel="canonical" href="https://www.unikdahal.com.np/writing" />
       </Helmet>
 
       <V2Header theme={theme} setTheme={setTheme} />
@@ -131,7 +131,7 @@ function WritingIndex({ theme, setTheme }) {
                       <span className="v2-writing-page-state">Draft</span>
                     </div>
                   ) : (
-                    <a className="v2-writing-page-row" href={'/v2/writing/' + post.slug} key={post.slug}>
+                    <a className="v2-writing-page-row" href={'/writing/' + post.slug} key={post.slug}>
                       <span className="v2-writing-page-part">Part {post.part}</span>
                       <div>
                         <h3>{post.title}</h3>
@@ -150,7 +150,7 @@ function WritingIndex({ theme, setTheme }) {
 
       <footer className="v2-writing-page-footer">
         <div className="v2-container">
-          <a href="/v2/">
+          <a href="/">
             <span>Back to</span>
             <strong>Portfolio</strong>
           </a>
@@ -220,10 +220,10 @@ function WritingArticle({ slug, theme, setTheme }) {
     window.scrollTo(0, 0)
   }, [slug])
 
-  if (!meta) return <Navigate to="/v2/writing" replace />
+  if (!meta) return <Navigate to="/writing" replace />
 
   if (meta.draft) {
-    return <Navigate to="/v2/writing" replace />
+    return <Navigate to="/writing" replace />
   }
 
   return (
@@ -235,9 +235,9 @@ function WritingArticle({ slug, theme, setTheme }) {
         <meta property="og:type" content="article" />
         <meta property="og:title" content={meta.title + ' — Unik Dahal'} />
         {meta.excerpt && <meta property="og:description" content={meta.excerpt} />}
-        <meta property="og:url" content={'https://www.unikdahal.com.np/v2/writing/' + slug} />
+        <meta property="og:url" content={'https://www.unikdahal.com.np/writing/' + slug} />
         <meta name="twitter:card" content="summary" />
-        <link rel="canonical" href={'https://www.unikdahal.com.np/v2/writing/' + slug} />
+        <link rel="canonical" href={'https://www.unikdahal.com.np/writing/' + slug} />
       </Helmet>
 
       <V2Header theme={theme} setTheme={setTheme} />
@@ -245,7 +245,7 @@ function WritingArticle({ slug, theme, setTheme }) {
       <article>
         <header className="v2-article-head">
           <div className="v2-container">
-            <a className="v2-article-back" href="/v2/writing">← Writing</a>
+            <a className="v2-article-back" href="/writing">← Writing</a>
             <div className="v2-article-meta">
               <span>{meta.category}</span>
               <i />
@@ -268,11 +268,11 @@ function WritingArticle({ slug, theme, setTheme }) {
 
         <footer className="v2-article-footer">
           <div className="v2-container">
-            <a href="/v2/writing">
+            <a href="/writing">
               <span>Back to</span>
               <strong>Writing</strong>
             </a>
-            <a href="/v2/">
+            <a href="/">
               <span>Back to</span>
               <strong>Portfolio</strong>
             </a>
