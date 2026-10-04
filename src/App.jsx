@@ -9,6 +9,7 @@ import BlogPost from './blog/pages/BlogPost'
 import TweaksPanel from './components/TweaksPanel'
 
 export default function App() {
+  const isV2 = typeof window !== 'undefined' && window.location.pathname.startsWith('/v2')
   const [theme, setThemeState] = useState(() => {
     try { return localStorage.getItem('ud-theme') || 'light' } catch { return 'light' }
   })
@@ -32,6 +33,7 @@ export default function App() {
 
   useEffect(() => {
     const fn = (e) => {
+      if (isV2) return
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
       if (e.key === 't' || e.key === 'T') setTweaksOpen(v => !v)
     }
@@ -66,11 +68,13 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
-      <TweaksPanel
-        open={tweaksOpen} setOpen={setTweaksOpen}
-        theme={theme} setTheme={setTheme}
-        accent={accent} setAccent={setAccent}
-      />
+      {!isV2 && (
+        <TweaksPanel
+          open={tweaksOpen} setOpen={setTweaksOpen}
+          theme={theme} setTheme={setTheme}
+          accent={accent} setAccent={setAccent}
+        />
+      )}
     </BrowserRouter>
   )
 }
