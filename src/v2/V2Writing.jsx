@@ -147,6 +147,19 @@ function WritingIndex({ theme, setTheme }) {
           ))}
         </div>
       </section>
+
+      <footer className="v2-writing-page-footer">
+        <div className="v2-container">
+          <a href="/v2/">
+            <span>Back to</span>
+            <strong>Portfolio</strong>
+          </a>
+          <a href="mailto:unikdahal03@gmail.com">
+            <span>Say hello</span>
+            <strong>Email</strong>
+          </a>
+        </div>
+      </footer>
     </main>
   )
 }
