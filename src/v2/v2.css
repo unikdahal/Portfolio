@@ -2424,16 +2424,33 @@ body:has(.v2-shell) {
   }
 
   .v2-oss-map-flow {
-    overflow-x: auto;
-    padding-bottom: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    overflow: visible;
   }
 
   .v2-oss-map-segment {
-    min-width: max-content;
+    width: 100%;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .v2-oss-map-segment i {
-    min-width: 28px;
+    width: 1px;
+    height: 12px;
+    min-width: 0;
+    flex: 0 0 12px;
+    margin: 7px 0 7px 4px;
+    background: linear-gradient(180deg, rgba(var(--v2-accent-rgb), .18), rgba(var(--v2-signal-rgb), .32));
+  }
+
+  .v2-oss-map-segment i::after {
+    top: auto;
+    right: -2px;
+    bottom: 0;
+    transform: rotate(135deg);
   }
 
   .v2-oss-item {
