@@ -145,6 +145,33 @@ function WritingIndex({ theme, setTheme }) {
   )
 }
 
+function V2Callout({ type = 'note', title, children }) {
+  return (
+    <aside className={'v2-prose-callout is-' + type}>
+      <span className="v2-prose-callout-label">{title || type}</span>
+      <div>{children}</div>
+    </aside>
+  )
+}
+
+function V2CodeBlock({ child }) {
+  const props = child?.props || {}
+  const code = String(props.children || '').replace(/\n$/, '')
+  const language = props.className?.replace('language-', '') || 'text'
+  const title = props.title
+
+  return (
+    <div className="v2-code-block">
+      <div className="v2-code-block-head">
+        <span>{title || language}</span>
+      </div>
+      <pre>
+        <code>{code}</code>
+      </pre>
+    </div>
+  )
+}
+
 const mdxComponents = {
   h2: (props) => <h2 className="v2-prose-h2" {...props} />,
   h3: (props) => <h3 className="v2-prose-h3" {...props} />,
@@ -157,12 +184,10 @@ const mdxComponents = {
   table: (props) => <div className="v2-prose-table-wrap"><table className="v2-prose-table" {...props} /></div>,
   th: (props) => <th {...props} />,
   td: (props) => <td {...props} />,
-  pre: (props) => <pre className="v2-prose-pre" {...props} />,
-  code: (props) => {
-    const isBlock = props.className?.includes('language-')
-    return <code className={isBlock ? 'v2-prose-code-block' : 'v2-prose-code'} {...props} />
-  },
+  pre: ({ children }) => <V2CodeBlock child={children} />,
+  code: (props) => <code className="v2-prose-code" {...props} />,
   a: (props) => <a className="v2-prose-link" {...props} />,
+  Callout: V2Callout,
 }
 
 function WritingArticle({ slug, theme, setTheme }) {
