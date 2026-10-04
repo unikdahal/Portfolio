@@ -4,6 +4,7 @@ import Navbar from './components/Navbar'
 import LandingPage from './portfolio/LandingPage'
 import PortfolioV2 from './v2/PortfolioV2'
 import CaseStudy from './v2/CaseStudy'
+import V2Writing from './v2/V2Writing'
 import BlogLayout from './layouts/BlogLayout'
 import BlogIndex from './blog/pages/BlogIndex'
 import BlogPost from './blog/pages/BlogPost'
@@ -58,6 +59,8 @@ export default function App() {
 
         {/* Portfolio V2 — isolated redesign */}
         <Route path="/v2/work/:slug" element={<CaseStudy />} />
+        <Route path="/v2/writing/:slug" element={<V2Writing />} />
+        <Route path="/v2/writing" element={<V2Writing />} />
         <Route path="/v2/*" element={<PortfolioV2 />} />
 
         {/* Blog Routes */}
