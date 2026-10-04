@@ -8,8 +8,20 @@ const LINKEDIN = 'https://www.linkedin.com/in/unikdahal'
 const OSS_GROUPS = [
   {
     name: 'Apache DataFusion Comet',
-    focus: 'Native query execution',
+    focus: 'Native Spark & Iceberg execution',
     items: [
+      {
+        pr: '#6587',
+        title: 'Preserve Spark 4.2 write transactions',
+        status: 'In review',
+        href: 'https://github.com/apache/datafusion-comet/pull/6587',
+      },
+      {
+        pr: '#6582',
+        title: 'Close Iceberg cleanup ownership gap',
+        status: 'In review',
+        href: 'https://github.com/apache/datafusion-comet/pull/6582',
+      },
       {
         pr: '#5318',
         title: 'Native MergeRowsExec for row-level MERGE',
@@ -61,6 +73,22 @@ const OSS_GROUPS = [
     ],
   },
 ]
+
+const WRITING_SERIES = {
+  name: 'Building Redis in Java',
+  published: {
+    part: '01',
+    title: 'How Redis Talks: The RESP Protocol',
+    excerpt: 'A byte-level look at the wire format behind Redis clients, pipelining, and streaming-safe parsing.',
+    meta: '13 min read · Systems',
+    href: '/blog/001-resp-protocol',
+  },
+  upcoming: [
+    ['02', 'The Single-Threaded Myth: Redis Event Loop & Netty'],
+    ['03', 'Transactions without ACID: MULTI/EXEC in Depth'],
+    ['04', 'Replication & PSYNC2: How Replicas Catch Up'],
+  ],
+}
 
 function getInitialTheme() {
   if (typeof window === 'undefined') return 'dark'
@@ -452,12 +480,99 @@ connected_slaves:1`}</code>
   )
 }
 
+function WritingSection() {
+  return (
+    <section className="v2-section v2-writing" id="writing">
+      <div className="v2-container">
+        <div className="v2-writing-grid">
+          <div className="v2-section-heading v2-writing-heading v2-reveal">
+            <span>06 · Writing</span>
+            <h2>Notes from the engine room.</h2>
+            <p>
+              I write when implementing something forces me to understand the layer underneath it.
+            </p>
+            <a className="v2-inline-link" href="/blog">
+              All writing
+              <ArrowIcon />
+            </a>
+          </div>
+
+          <div className="v2-writing-series v2-reveal">
+            <div className="v2-writing-series-head">
+              <span>Series</span>
+              <strong>{WRITING_SERIES.name}</strong>
+            </div>
+
+            <a className="v2-writing-feature" href={WRITING_SERIES.published.href}>
+              <span className="v2-writing-part">Part {WRITING_SERIES.published.part}</span>
+              <div>
+                <h3>{WRITING_SERIES.published.title}</h3>
+                <p>{WRITING_SERIES.published.excerpt}</p>
+                <span className="v2-writing-meta">{WRITING_SERIES.published.meta}</span>
+              </div>
+              <ArrowIcon />
+            </a>
+
+            <div className="v2-writing-upcoming">
+              <span className="v2-writing-upcoming-label">Next in the series</span>
+              {WRITING_SERIES.upcoming.map(([part, title]) => (
+                <div className="v2-writing-upcoming-row" key={part}>
+                  <span>{part}</span>
+                  <p>{title}</p>
+                  <small>Draft</small>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function ElsewhereSection() {
+  return (
+    <section className="v2-section v2-elsewhere">
+      <div className="v2-container">
+        <div className="v2-elsewhere-grid">
+          <div className="v2-elsewhere-heading v2-reveal">
+            <span>07 · Elsewhere</span>
+            <h2>I also like shipping the whole product.</h2>
+          </div>
+
+          <a className="v2-sutine v2-reveal" href="https://sutine.com" target="_blank" rel="noreferrer">
+            <div className="v2-sutine-top">
+              <span>Live product · 2025—present</span>
+              <ArrowIcon />
+            </div>
+
+            <div className="v2-sutine-main">
+              <h3>Sutine<em>.</em></h3>
+              <p>
+                A clothing label I co-own and the commerce platform behind it — storefront,
+                inventory, checkout, payments, admin workflows, and production operations.
+              </p>
+            </div>
+
+            <div className="v2-sutine-stack">
+              <span>Spring Boot</span>
+              <span>React / TypeScript</span>
+              <span>MySQL</span>
+              <span>Cloudflare R2</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function ExperienceSection() {
   return (
     <section className="v2-section v2-experience">
       <div className="v2-container">
         <div className="v2-section-heading v2-section-heading-compact v2-reveal">
-          <span>06 · Experience</span>
+          <span>08 · Experience</span>
           <h2>The short version.</h2>
         </div>
 
@@ -534,7 +649,7 @@ export default function PortfolioV2() {
             <div className="v2-nav-links" role="navigation" aria-label="Portfolio navigation">
               <a href="#work">Work</a>
               <a href="#open-source">Open source</a>
-              <a href="/blog">Writing</a>
+              <a href="#writing">Writing</a>
             </div>
             <button
               className="v2-theme-toggle"
@@ -643,6 +758,8 @@ export default function PortfolioV2() {
 
       <OpenSourceSection />
       <RedisSection />
+      <WritingSection />
+      <ElsewhereSection />
       <ExperienceSection />
 
       <footer className="v2-footer">
