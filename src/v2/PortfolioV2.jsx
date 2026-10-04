@@ -81,7 +81,7 @@ const WRITING_SERIES = {
     title: 'How Redis Talks: The RESP Protocol',
     excerpt: 'A byte-level look at the wire format behind Redis clients, pipelining, and streaming-safe parsing.',
     meta: '13 min read · Systems',
-    href: '/v2/writing/001-resp-protocol',
+    href: '/writing/001-resp-protocol',
   },
   upcoming: [
     ['02', 'The Single-Threaded Myth: Redis Event Loop & Netty'],
@@ -524,7 +524,7 @@ function WritingSection() {
             <p>
               I write when implementing something forces me to understand the layer underneath it.
             </p>
-            <a className="v2-inline-link" href="/v2/writing">
+            <a className="v2-inline-link" href="/writing">
               All writing
               <ArrowIcon />
             </a>
@@ -677,16 +677,16 @@ export default function PortfolioV2() {
           property="og:description"
           content="Production data infrastructure, native query execution, Apache open source, and systems built from first principles."
         />
-        <meta property="og:url" content="https://www.unikdahal.com.np/v2/" />
+        <meta property="og:url" content="https://www.unikdahal.com.np/" />
         <meta name="twitter:card" content="summary" />
-        <link rel="canonical" href="https://www.unikdahal.com.np/v2/" />
+        <link rel="canonical" href="https://www.unikdahal.com.np/" />
       </Helmet>
 
       <section className="v2-hero">
         <SystemField />
 
         <header className="v2-nav">
-          <a className="v2-brand" href="/v2/" aria-label="Unik Dahal home">
+          <a className="v2-brand" href="/" aria-label="Unik Dahal home">
             <span className="v2-brand-mark">u.</span>
             <span>Unik Dahal</span>
           </a>
@@ -764,7 +764,7 @@ export default function PortfolioV2() {
                 { value: '~15×', label: 'less transport overhead' },
               ]}
               tags={['Arrow Flight SQL', 'ADBC', 'Apache Spark', 'Kyuubi']}
-              href="/v2/work/query-path"
+              href="/work/query-path"
             >
               <QueryVisual />
             </WorkCard>
@@ -780,7 +780,7 @@ export default function PortfolioV2() {
                 { value: '~90%', label: 'compute reduction' },
               ]}
               tags={['Apache Spark', 'Apache Iceberg', 'Polaris', 'Snowflake']}
-              href="/v2/work/lakehouse-migration"
+              href="/work/lakehouse-migration"
               className="v2-work-card-migration"
             >
               <MigrationVisual />
@@ -797,7 +797,7 @@ export default function PortfolioV2() {
                 { value: '~70%', label: 'fewer related incidents' },
               ]}
               tags={['Saga', 'Kafka', 'Spring', 'Object storage']}
-              href="/v2/work/saga-orchestration"
+              href="/work/saga-orchestration"
               className="v2-work-card-saga"
             >
               <SagaVisual />
@@ -828,8 +828,7 @@ export default function PortfolioV2() {
             <div>
               <a href={GITHUB} target="_blank" rel="noreferrer">GitHub</a>
               <a href={LINKEDIN} target="_blank" rel="noreferrer">LinkedIn</a>
-              <a href="/v2/writing">Writing</a>
-              <a href="/">Previous version</a>
+              <a href="/writing">Writing</a>
             </div>
           </div>
         </div>
