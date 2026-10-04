@@ -573,7 +573,11 @@ function ExperienceSection() {
       <div className="v2-container">
         <div className="v2-section-heading v2-section-heading-compact v2-reveal">
           <span>08 · Experience</span>
-          <h2>The short version.</h2>
+          <h2>Where the work happened.</h2>
+          <p>
+            From Nepal, now based in Hyderabad. I’m most interested in the boundaries
+            between execution engines, storage formats, protocols, and distributed state.
+          </p>
         </div>
 
         <div className="v2-experience-list">
