@@ -390,6 +390,32 @@ function WorkCard({ index, eyebrow, title, accent, description, metrics, tags, h
   )
 }
 
+function OpenSourceMap() {
+  const tracks = [
+    ['Native execution', 'Spark', 'Comet', 'DataFusion'],
+    ['Row-level storage', 'Iceberg', 'iceberg-rust', 'position deletes'],
+    ['Query transport', 'ADBC', 'Flight SQL', 'Arrow'],
+  ]
+
+  return (
+    <div className="v2-oss-map v2-reveal" aria-label="Open source focus areas">
+      {tracks.map(([label, ...nodes]) => (
+        <div className="v2-oss-map-row" key={label}>
+          <span className="v2-oss-map-label">{label}</span>
+          <div className="v2-oss-map-flow">
+            {nodes.map((node, index) => (
+              <div className="v2-oss-map-segment" key={node}>
+                <strong>{node}</strong>
+                {index < nodes.length - 1 && <i aria-hidden="true" />}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function OpenSourceSection() {
   return (
     <section className="v2-section v2-oss" id="open-source">
@@ -402,6 +428,8 @@ function OpenSourceSection() {
             and Iceberg row-level write infrastructure.
           </p>
         </div>
+
+        <OpenSourceMap />
 
         <div className="v2-oss-grid">
           {OSS_GROUPS.map((group) => (
