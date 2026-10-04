@@ -3651,14 +3651,6 @@ body:has(.v2-shell) {
 }
 
 
-.v2-prose-pre code {
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-}
-
 .v2-prose-quote {
   margin: 36px 0;
   padding: 8px 0 8px 25px;
