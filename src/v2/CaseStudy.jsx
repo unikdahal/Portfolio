@@ -153,7 +153,7 @@ function ArrowIcon() {
 function CaseDiagram({ type }) {
   if (type === 'query-path') {
     return (
-      <div className="v2-case-diagram v2-case-query" aria-label="Before and after query transport path">
+      <div className="v2-case-diagram v2-case-query" role="img" aria-label="Before and after query transport path">
         <div className="v2-case-diagram-head">
           <span>Request path</span>
           <span>fixed overhead, not execution time</span>
@@ -182,7 +182,7 @@ function CaseDiagram({ type }) {
 
   if (type === 'lakehouse-migration') {
     return (
-      <div className="v2-case-diagram v2-case-migration" aria-label="Phased Snowflake to Spark Iceberg migration">
+      <div className="v2-case-diagram v2-case-migration" role="img" aria-label="Phased Snowflake to Spark Iceberg migration">
         <div className="v2-case-diagram-head">
           <span>Migration state</span>
           <span>phased, compatibility-first</span>
@@ -212,7 +212,7 @@ function CaseDiagram({ type }) {
   }
 
   return (
-    <div className="v2-case-diagram v2-case-saga" aria-label="Distributed Saga forward and compensation flow">
+    <div className="v2-case-diagram v2-case-saga" role="img" aria-label="Distributed Saga forward and compensation flow">
       <div className="v2-case-diagram-head">
         <span>Failure model</span>
         <span>forward actions + compensation</span>
@@ -274,6 +274,7 @@ export default function CaseStudy() {
             type="button"
             onClick={() => setTheme((value) => value === 'dark' ? 'light' : 'dark')}
             aria-label={'Switch to ' + (theme === 'dark' ? 'light' : 'dark') + ' mode'}
+            title={'Switch to ' + (theme === 'dark' ? 'light' : 'dark') + ' mode'}
           >
             <ThemeIcon theme={theme} />
           </button>
