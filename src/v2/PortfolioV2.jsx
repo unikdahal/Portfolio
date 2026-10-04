@@ -829,7 +829,7 @@ export default function PortfolioV2() {
               <a href={GITHUB} target="_blank" rel="noreferrer">GitHub</a>
               <a href={LINKEDIN} target="_blank" rel="noreferrer">LinkedIn</a>
               <a href="/v2/writing">Writing</a>
-              <a href="/">V1</a>
+              <a href="/">Previous version</a>
             </div>
           </div>
         </div>
