@@ -1969,6 +1969,30 @@ body:has(.v2-shell) {
     var(--v2-bg-2);
 }
 
+
+.v2-footer::after {
+  content: "UNIK DAHAL";
+  position: absolute;
+  left: 50%;
+  bottom: -.18em;
+  transform: translateX(-50%);
+  width: max-content;
+  font-family: var(--v2-display);
+  font-size: clamp(110px, 18vw, 280px);
+  font-weight: 600;
+  line-height: .78;
+  letter-spacing: -.075em;
+  color: var(--v2-text);
+  opacity: .025;
+  pointer-events: none;
+  user-select: none;
+}
+
+.v2-footer .v2-container {
+  position: relative;
+  z-index: 1;
+}
+
 .v2-footer-top > p {
   margin: 0 0 16px;
   font-size: 11px;
