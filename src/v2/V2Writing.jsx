@@ -60,6 +60,7 @@ function V2Header({ theme, setTheme }) {
           type="button"
           onClick={() => setTheme((value) => value === 'dark' ? 'light' : 'dark')}
           aria-label={'Switch to ' + (theme === 'dark' ? 'light' : 'dark') + ' mode'}
+          title={'Switch to ' + (theme === 'dark' ? 'light' : 'dark') + ' mode'}
         >
           <ThemeIcon theme={theme} />
         </button>
