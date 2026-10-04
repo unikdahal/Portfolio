@@ -712,10 +712,10 @@ export default function PortfolioV2() {
         <div className="v2-container">
           <div className="v2-section-heading v2-reveal">
             <span>01–03 · Selected work</span>
-            <h2>Production systems, not portfolio demos.</h2>
+            <h2>Where the system had to hold.</h2>
             <p>
-              A few pieces of infrastructure where the interesting work lived
-              below the feature surface.
+              Query paths, migration boundaries, and distributed workflows where
+              the interesting work lived below the feature surface.
             </p>
           </div>
 
@@ -758,7 +758,7 @@ export default function PortfolioV2() {
               accent="be reversible."
               description="A seven-service import/export flow needed to survive partial failure. I designed the orchestration around a distributed Saga with compensating actions and explicit ownership of rollback."
               metrics={[
-                { value: '7', label: 'services in the workflow' },
+                { value: '~6mo → ~1mo', label: 'environment recreation' },
                 { value: '~70%', label: 'fewer related incidents' },
               ]}
               tags={['Saga', 'Kafka', 'Spring', 'Object storage']}
