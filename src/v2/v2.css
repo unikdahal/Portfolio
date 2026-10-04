@@ -58,6 +58,9 @@
   --v2-danger: #ef8e91;
   --v2-danger-rgb: 239, 142, 145;
 
+  --v2-warm: #e3b47b;
+  --v2-warm-rgb: 227, 180, 123;
+
   --v2-grid: rgba(135, 157, 188, .045);
   --v2-shadow: 0 28px 85px rgba(3, 8, 16, .20);
 
@@ -96,6 +99,9 @@
   --v2-danger: #c95d65;
   --v2-danger-rgb: 201, 93, 101;
 
+  --v2-warm: #a66b36;
+  --v2-warm-rgb: 166, 107, 54;
+
   --v2-grid: rgba(61, 80, 105, .042);
   --v2-shadow: 0 24px 72px rgba(67, 82, 103, .09);
 
@@ -116,6 +122,16 @@
 
 .v2-shell button {
   font: inherit;
+}
+
+.v2-shell a:focus-visible {
+  outline: 2px solid rgba(var(--v2-accent-rgb), .74);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.v2-shell section[id] {
+  scroll-margin-top: 72px;
 }
 
 .v2-shell ::selection {
@@ -1506,6 +1522,320 @@
 }
 
 /* ============================================================
+   WRITING
+   ============================================================ */
+
+.v2-writing {
+  background:
+    radial-gradient(circle at 86% 12%, rgba(var(--v2-accent-rgb), .03), transparent 26rem),
+    var(--v2-bg);
+}
+
+.v2-writing-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 3.5fr) minmax(0, 6.5fr);
+  gap: clamp(70px, 11vw, 150px);
+  align-items: start;
+}
+
+.v2-writing-heading {
+  position: sticky;
+  top: 110px;
+  margin-bottom: 0;
+}
+
+.v2-writing-heading h2 {
+  max-width: 9ch;
+}
+
+.v2-writing-heading > p {
+  max-width: 38ch;
+}
+
+.v2-writing-series {
+  min-width: 0;
+  border-top: 1px solid var(--v2-line);
+}
+
+.v2-writing-series-head {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  border-bottom: 1px solid var(--v2-line);
+}
+
+.v2-writing-series-head > span {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .065em;
+  text-transform: uppercase;
+  color: var(--v2-text-3);
+}
+
+.v2-writing-series-head > strong {
+  font-family: var(--v2-display);
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -.035em;
+  color: var(--v2-text);
+}
+
+.v2-writing-feature {
+  position: relative;
+  min-width: 0;
+  padding: clamp(34px, 4.5vw, 54px) 0;
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) 24px;
+  gap: 24px;
+  align-items: start;
+  border-bottom: 1px solid var(--v2-line);
+}
+
+.v2-writing-part {
+  padding-top: 6px;
+  font-family: var(--v2-mono);
+  font-size: 8.5px;
+  color: var(--v2-accent);
+}
+
+.v2-writing-feature h3 {
+  margin: 0;
+  max-width: 16ch;
+  font-family: var(--v2-display);
+  font-size: clamp(31px, 3.8vw, 50px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -.055em;
+  color: var(--v2-text);
+  transition: color .18s ease;
+}
+
+.v2-writing-feature p {
+  margin: 20px 0 0;
+  max-width: 55ch;
+  font-size: 13px;
+  line-height: 1.72;
+  color: var(--v2-text-2);
+}
+
+.v2-writing-meta {
+  display: block;
+  margin-top: 24px;
+  font-size: 9.5px;
+  font-weight: 500;
+  color: var(--v2-text-3);
+}
+
+.v2-writing-feature > svg {
+  width: 17px;
+  margin-top: 6px;
+  color: var(--v2-text-3);
+  transition: transform .24s var(--v2-ease), color .18s ease;
+}
+
+.v2-writing-feature:hover h3 {
+  color: var(--v2-accent-2);
+}
+
+.v2-writing-feature:hover > svg {
+  color: var(--v2-text);
+  transform: translateX(4px);
+}
+
+.v2-writing-upcoming {
+  padding-top: 26px;
+}
+
+.v2-writing-upcoming-label {
+  display: block;
+  margin-bottom: 13px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .065em;
+  text-transform: uppercase;
+  color: var(--v2-text-3);
+}
+
+.v2-writing-upcoming-row {
+  min-height: 54px;
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  gap: 15px;
+  align-items: center;
+  border-top: 1px solid var(--v2-line);
+}
+
+.v2-writing-upcoming-row > span {
+  font-family: var(--v2-mono);
+  font-size: 8px;
+  color: var(--v2-text-3);
+}
+
+.v2-writing-upcoming-row p {
+  margin: 0;
+  min-width: 0;
+  font-size: 11px;
+  color: var(--v2-text-2);
+}
+
+.v2-writing-upcoming-row small {
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--v2-text-3);
+}
+
+/* ============================================================
+   ELSEWHERE / PRODUCT INTERLUDE
+   ============================================================ */
+
+.v2-elsewhere {
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 80% 36%, rgba(var(--v2-warm-rgb), .055), transparent 28rem),
+    var(--v2-bg-2);
+}
+
+.v2-elsewhere-grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 3.2fr) minmax(0, 6.8fr);
+  gap: clamp(64px, 10vw, 138px);
+  align-items: stretch;
+}
+
+.v2-elsewhere-heading > span {
+  display: block;
+  margin-bottom: 22px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .075em;
+  text-transform: uppercase;
+  color: var(--v2-warm);
+}
+
+.v2-elsewhere-heading h2 {
+  margin: 0;
+  max-width: 10ch;
+  font-family: var(--v2-display);
+  font-size: clamp(42px, 5.3vw, 72px);
+  font-weight: 500;
+  line-height: .96;
+  letter-spacing: -.06em;
+  color: var(--v2-text);
+}
+
+.v2-sutine {
+  position: relative;
+  min-width: 0;
+  min-height: 390px;
+  padding: clamp(28px, 4vw, 46px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid var(--v2-line);
+  border-radius: 22px;
+  background:
+    linear-gradient(145deg, rgba(var(--v2-warm-rgb), .075), transparent 40%),
+    rgba(var(--v2-text-rgb), .014);
+  transition:
+    transform .32s var(--v2-ease),
+    border-color .2s ease,
+    background-color .2s ease;
+}
+
+.v2-sutine::before {
+  content: "S";
+  position: absolute;
+  right: -0.05em;
+  bottom: -.22em;
+  font-family: var(--v2-serif);
+  font-size: clamp(220px, 25vw, 360px);
+  font-style: italic;
+  line-height: 1;
+  color: rgba(var(--v2-warm-rgb), .055);
+  pointer-events: none;
+}
+
+.v2-sutine:hover {
+  transform: translateY(-4px);
+  border-color: rgba(var(--v2-warm-rgb), .26);
+}
+
+.v2-sutine-top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+  color: var(--v2-text-3);
+}
+
+.v2-sutine-top svg {
+  width: 16px;
+  transition: transform .24s var(--v2-ease);
+}
+
+.v2-sutine:hover .v2-sutine-top svg {
+  transform: translate(3px, -2px);
+}
+
+.v2-sutine-main {
+  position: relative;
+  z-index: 2;
+  max-width: 560px;
+  margin: 52px 0;
+}
+
+.v2-sutine-main h3 {
+  margin: 0;
+  font-family: var(--v2-display);
+  font-size: clamp(58px, 7vw, 96px);
+  font-weight: 500;
+  line-height: .84;
+  letter-spacing: -.075em;
+  color: var(--v2-text);
+}
+
+.v2-sutine-main h3 em {
+  font-family: var(--v2-serif);
+  font-weight: 400;
+  color: var(--v2-warm);
+}
+
+.v2-sutine-main p {
+  margin: 30px 0 0;
+  max-width: 49ch;
+  font-size: 13px;
+  line-height: 1.78;
+  color: var(--v2-text-2);
+}
+
+.v2-sutine-stack {
+  position: relative;
+  z-index: 2;
+  padding-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px 20px;
+  border-top: 1px solid var(--v2-line);
+}
+
+.v2-sutine-stack span {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--v2-text-3);
+}
+
+/* ============================================================
    EXPERIENCE
    ============================================================ */
 
@@ -1688,6 +2018,10 @@
 }
 
 @media (max-width: 820px) {
+  .v2-field-label {
+    display: none;
+  }
+
   .v2-nav {
     height: 74px;
   }
@@ -1757,6 +2091,21 @@
 
   .v2-built-copy {
     max-width: 700px;
+  }
+
+  .v2-writing-grid,
+  .v2-elsewhere-grid {
+    grid-template-columns: 1fr;
+    gap: 54px;
+  }
+
+  .v2-writing-heading {
+    position: static;
+  }
+
+  .v2-writing-heading h2,
+  .v2-elsewhere-heading h2 {
+    max-width: 12ch;
   }
 }
 
@@ -1980,6 +2329,37 @@
 
   .v2-built-grid {
     gap: 42px;
+  }
+
+  .v2-writing-feature {
+    grid-template-columns: 50px minmax(0, 1fr) 18px;
+    gap: 14px;
+  }
+
+  .v2-writing-feature h3 {
+    font-size: clamp(30px, 9vw, 42px);
+  }
+
+  .v2-writing-upcoming-row {
+    grid-template-columns: 34px minmax(0, 1fr);
+  }
+
+  .v2-writing-upcoming-row small {
+    display: none;
+  }
+
+  .v2-sutine {
+    min-height: 330px;
+    padding: 24px 20px;
+    border-radius: 18px;
+  }
+
+  .v2-sutine-main {
+    margin: 42px 0;
+  }
+
+  .v2-sutine-main h3 {
+    font-size: clamp(58px, 18vw, 82px);
   }
 
   .v2-terminal pre {
