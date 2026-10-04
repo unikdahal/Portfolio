@@ -416,6 +416,48 @@ function OpenSourceMap() {
   )
 }
 
+function SupportingWork() {
+  const items = [
+    {
+      label: 'Event pipeline',
+      value: '500 GB+ / day',
+      body: 'Kafka audit events into S3, deliberately decoupled from the critical request path.',
+    },
+    {
+      label: 'Database reliability',
+      value: 'Gap-lock RCA',
+      body: 'Reworked worksheet/cell indexing to eliminate a production copy failure mode under concurrent writes.',
+    },
+    {
+      label: 'Telemedicine backend',
+      value: '1k+ users',
+      body: 'RBAC, encrypted clinical flows, and UTC-normalized scheduling to prevent double booking.',
+    },
+  ]
+
+  return (
+    <div className="v2-supporting-work v2-reveal">
+      <div className="v2-supporting-head">
+        <span>Additional systems</span>
+        <p>Smaller stories, still production work.</p>
+      </div>
+
+      <div className="v2-supporting-list">
+        {items.map((item, index) => (
+          <div className="v2-supporting-row" key={item.label}>
+            <span className="v2-supporting-index">{String(index + 1).padStart(2, '0')}</span>
+            <div>
+              <span className="v2-supporting-label">{item.label}</span>
+              <strong>{item.value}</strong>
+            </div>
+            <p>{item.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function OpenSourceSection() {
   return (
     <section className="v2-section v2-oss" id="open-source">
@@ -803,6 +845,8 @@ export default function PortfolioV2() {
               <SagaVisual />
             </WorkCard>
           </div>
+
+          <SupportingWork />
         </div>
       </section>
 
