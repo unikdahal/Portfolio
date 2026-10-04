@@ -722,8 +722,8 @@ export default function PortfolioV2() {
 
           <div className="v2-hero-support">
             <p>
-              I’m Unik, a software engineer working on query execution,
-              lakehouse infrastructure, and distributed backends.
+              I’m Unik, a data infrastructure engineer working across query execution,
+              lakehouse systems, and distributed backends.
             </p>
           </div>
 
