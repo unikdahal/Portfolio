@@ -3520,18 +3520,6 @@
   color: var(--v2-text);
 }
 
-.v2-prose-pre {
-  margin: 34px 0;
-  padding: 24px 26px;
-  overflow-x: auto;
-  border: 1px solid var(--v2-line);
-  border-radius: 14px;
-  background: var(--v2-terminal);
-  color: var(--v2-terminal-text);
-  font-family: var(--v2-mono);
-  font-size: 12.5px;
-  line-height: 1.75;
-}
 
 .v2-prose-pre code {
   padding: 0;
@@ -3707,12 +3695,6 @@
 
   .v2-article-meta {
     gap: 8px;
-  }
-
-  .v2-prose-pre {
-    margin-inline: -4px;
-    padding: 20px 18px;
-    border-radius: 12px;
   }
 
   .v2-article-footer .v2-container {
