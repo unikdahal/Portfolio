@@ -3114,8 +3114,15 @@ body:has(.v2-shell) {
 }
 
 .v2-case-footer {
+  display: block;
+  margin: 0;
   padding: 0 0 34px;
+  border-top: 0;
   background: var(--v2-bg);
+  color: var(--v2-text);
+  font-family: var(--v2-body);
+  font-size: inherit;
+  text-align: initial;
 }
 
 .v2-case-footer .v2-container {
@@ -3717,7 +3724,15 @@ body:has(.v2-shell) {
 }
 
 .v2-article-footer {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border-top: 0;
   background: var(--v2-bg);
+  color: var(--v2-text);
+  font-family: var(--v2-body);
+  font-size: inherit;
+  text-align: initial;
 }
 
 .v2-article-footer .v2-container {
