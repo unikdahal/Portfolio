@@ -89,6 +89,11 @@ function WritingIndex({ theme, setTheme }) {
           content="Notes on systems, protocols, query infrastructure, and things understood by building them."
         />
         <meta name="theme-color" content={theme === 'dark' ? '#101521' : '#f4f6fa'} />
+        <meta property="og:title" content="Writing — Unik Dahal" />
+        <meta property="og:description" content="Notes on systems, protocols, query infrastructure, and things understood by building them." />
+        <meta property="og:url" content="https://www.unikdahal.com.np/v2/writing" />
+        <meta name="twitter:card" content="summary" />
+        <link rel="canonical" href="https://www.unikdahal.com.np/v2/writing" />
       </Helmet>
 
       <V2Header theme={theme} setTheme={setTheme} />
@@ -214,6 +219,12 @@ function WritingArticle({ slug, theme, setTheme }) {
         <title>{meta.title} — Unik Dahal</title>
         {meta.excerpt && <meta name="description" content={meta.excerpt} />}
         <meta name="theme-color" content={theme === 'dark' ? '#101521' : '#f4f6fa'} />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={meta.title + ' — Unik Dahal'} />
+        {meta.excerpt && <meta property="og:description" content={meta.excerpt} />}
+        <meta property="og:url" content={'https://www.unikdahal.com.np/v2/writing/' + slug} />
+        <meta name="twitter:card" content="summary" />
+        <link rel="canonical" href={'https://www.unikdahal.com.np/v2/writing/' + slug} />
       </Helmet>
 
       <V2Header theme={theme} setTheme={setTheme} />
