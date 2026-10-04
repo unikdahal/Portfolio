@@ -1293,6 +1293,76 @@ body:has(.v2-shell) {
    OPEN SOURCE
    ============================================================ */
 
+.v2-oss-map {
+  margin: 0 0 clamp(54px, 7vw, 88px);
+  border-top: 1px solid var(--v2-line);
+  border-bottom: 1px solid var(--v2-line);
+}
+
+.v2-oss-map-row {
+  min-height: 78px;
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr);
+  gap: 32px;
+  align-items: center;
+  border-bottom: 1px solid var(--v2-line);
+}
+
+.v2-oss-map-row:last-child {
+  border-bottom: 0;
+}
+
+.v2-oss-map-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+  color: var(--v2-text-3);
+}
+
+.v2-oss-map-flow {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.v2-oss-map-segment {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  flex: 1 1 0;
+}
+
+.v2-oss-map-segment strong {
+  flex: 0 0 auto;
+  font-family: var(--v2-display);
+  font-size: clamp(15px, 1.55vw, 19px);
+  font-weight: 500;
+  letter-spacing: -.035em;
+  color: var(--v2-text-2);
+}
+
+.v2-oss-map-segment i {
+  position: relative;
+  height: 1px;
+  flex: 1 1 auto;
+  min-width: 30px;
+  margin: 0 17px;
+  background: linear-gradient(90deg, rgba(var(--v2-accent-rgb), .18), rgba(var(--v2-signal-rgb), .32));
+}
+
+.v2-oss-map-segment i::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  right: 0;
+  width: 5px;
+  height: 5px;
+  border-top: 1px solid var(--v2-signal);
+  border-right: 1px solid var(--v2-signal);
+  transform: rotate(45deg);
+}
+
 .v2-oss {
   background:
     radial-gradient(circle at 88% 10%, rgba(var(--v2-accent-rgb), .035), transparent 28rem),
@@ -2078,6 +2148,11 @@ body:has(.v2-shell) {
     padding: 22px 20px 24px;
   }
 
+  .v2-oss-map-row {
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: 22px;
+  }
+
   .v2-oss-group {
     grid-template-columns: 1fr;
     gap: 22px;
@@ -2316,6 +2391,25 @@ body:has(.v2-shell) {
 
   .v2-saga-service:nth-child(n+5) {
     margin-top: 8px;
+  }
+
+  .v2-oss-map-row {
+    padding: 18px 0;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .v2-oss-map-flow {
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .v2-oss-map-segment {
+    min-width: max-content;
+  }
+
+  .v2-oss-map-segment i {
+    min-width: 28px;
   }
 
   .v2-oss-item {
