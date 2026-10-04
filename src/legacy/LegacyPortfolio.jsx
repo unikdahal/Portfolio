@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Helmet } from 'react-helmet-async'
 import Navbar from '../components/Navbar'
 import LandingPage from '../portfolio/LandingPage'
 import TweaksPanel from '../components/TweaksPanel'
@@ -40,6 +41,11 @@ export default function LegacyPortfolio() {
 
   return (
     <>
+      <Helmet>
+        <title>Previous Portfolio — Unik Dahal</title>
+        <meta name="robots" content="noindex,nofollow" />
+        <link rel="canonical" href="https://www.unikdahal.com.np/" />
+      </Helmet>
       <Navbar
         homePath="/v1"
         theme={theme}
