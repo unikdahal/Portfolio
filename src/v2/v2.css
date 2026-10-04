@@ -785,6 +785,12 @@
   color: var(--v2-text);
 }
 
+.v2-work-metrics strong.is-long {
+  font-size: clamp(24px, 2.55vw, 36px);
+  letter-spacing: -.045em;
+  white-space: nowrap;
+}
+
 .v2-work-metrics span {
   margin-top: 16px;
   max-width: 22ch;
