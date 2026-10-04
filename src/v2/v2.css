@@ -51,7 +51,7 @@ body:has(.v2-shell) {
   --v2-text: #eef2f7;
   --v2-text-rgb: 238, 242, 247;
   --v2-text-2: #a8b2c0;
-  --v2-text-3: #6f7c8d;
+  --v2-text-3: #748294;
 
   --v2-line: rgba(185, 201, 222, .10);
   --v2-line-2: rgba(185, 201, 222, .17);
@@ -92,23 +92,23 @@ body:has(.v2-shell) {
   --v2-text: #111821;
   --v2-text-rgb: 17, 24, 33;
   --v2-text-2: #5d6877;
-  --v2-text-3: #8993a1;
+  --v2-text-3: #65717f;
 
   --v2-line: rgba(48, 64, 84, .10);
   --v2-line-2: rgba(48, 64, 84, .17);
   --v2-line-3: rgba(48, 64, 84, .24);
 
-  --v2-accent: #655eff;
+  --v2-accent: #5f58f6;
   --v2-accent-rgb: 101, 94, 255;
   --v2-accent-2: #746eff;
 
   --v2-signal: #129d96;
   --v2-signal-rgb: 18, 157, 150;
 
-  --v2-danger: #c95d65;
+  --v2-danger: #b44c56;
   --v2-danger-rgb: 201, 93, 101;
 
-  --v2-warm: #a66b36;
+  --v2-warm: #9a602f;
   --v2-warm-rgb: 166, 107, 54;
 
   --v2-grid: rgba(61, 80, 105, .042);
