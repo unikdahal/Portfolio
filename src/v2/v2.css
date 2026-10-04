@@ -5,6 +5,18 @@
    One continuous visual world, theme-aware from the start.
    ============================================================ */
 
+body:has(.v2-shell[data-v2-theme="dark"]) {
+  background: #101521;
+}
+
+body:has(.v2-shell[data-v2-theme="light"]) {
+  background: #f4f6fa;
+}
+
+body:has(.v2-shell) {
+  overflow-x: hidden;
+}
+
 .v2-shell {
   --v2-display: "Inter Tight", "Inter", system-ui, sans-serif;
   --v2-body: "Inter", system-ui, sans-serif;
