@@ -1,27 +1,23 @@
-import { useState, useEffect } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import LandingPage from './portfolio/LandingPage'
 import PortfolioV2 from './v2/PortfolioV2'
 import CaseStudy from './v2/CaseStudy'
 import V2Writing from './v2/V2Writing'
-import BlogLayout from './layouts/BlogLayout'
-import BlogIndex from './blog/pages/BlogIndex'
-import BlogPost from './blog/pages/BlogPost'
 import TweaksPanel from './components/TweaksPanel'
 
-export default function App() {
-  const isV2 = typeof window !== 'undefined' && window.location.pathname.startsWith('/v2')
+function LegacyPortfolio() {
   const [theme, setThemeState] = useState(() => {
     try { return localStorage.getItem('ud-theme') || 'light' } catch { return 'light' }
   })
   const [accent, setAccentState] = useState('#16a34a')
   const [tweaksOpen, setTweaksOpen] = useState(false)
-  
-  const setTheme = (t) => {
-    document.documentElement.setAttribute('data-theme', t)
-    setThemeState(t)
-    try { localStorage.setItem('ud-theme', t) } catch {}
+
+  const setTheme = (value) => {
+    document.documentElement.setAttribute('data-theme', value)
+    setThemeState(value)
+    try { localStorage.setItem('ud-theme', value) } catch {}
   }
 
   const setAccent = (light, dark) => {
@@ -31,55 +27,72 @@ export default function App() {
     setAccentState(light)
   }
 
-  useEffect(() => { setTheme(theme) }, [])
+  useEffect(() => {
+    setTheme(theme)
+  }, [])
 
   useEffect(() => {
-    const fn = (e) => {
-      if (isV2) return
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
-      if (e.key === 't' || e.key === 'T') setTweaksOpen(v => !v)
+    const onKeyDown = (event) => {
+      if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return
+      if (event.key === 't' || event.key === 'T') setTweaksOpen((value) => !value)
     }
-    window.addEventListener('keydown', fn)
-    return () => window.removeEventListener('keydown', fn)
+
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
   }, [])
 
   return (
+    <>
+      <Navbar
+        homePath="/v1"
+        theme={theme}
+        onToggle={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+      />
+      <LandingPage />
+      <TweaksPanel
+        open={tweaksOpen}
+        setOpen={setTweaksOpen}
+        theme={theme}
+        setTheme={setTheme}
+        accent={accent}
+        setAccent={setAccent}
+      />
+    </>
+  )
+}
+
+function CompatibilityRedirect({ from, to }) {
+  const location = useLocation()
+  const suffix = location.pathname.slice(from.length)
+  const targetPath = (to + suffix).replace(/\/+/g, '/') || '/'
+
+  return (
+    <Navigate
+      to={targetPath + location.search + location.hash}
+      replace
+    />
+  )
+}
+
+export default function App() {
+  return (
     <BrowserRouter>
       <Routes>
-        {/* Portfolio Route */}
-        <Route path="/" element={
-          <>
-            <Navbar 
-              theme={theme} 
-              onToggle={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            />
-            <LandingPage />
-          </>
-        } />
+        {/* Current portfolio */}
+        <Route path="/" element={<PortfolioV2 />} />
+        <Route path="/work/:slug" element={<CaseStudy />} />
+        <Route path="/writing/:slug" element={<V2Writing />} />
+        <Route path="/writing" element={<V2Writing />} />
 
-        {/* Portfolio V2 — isolated redesign */}
-        <Route path="/v2/work/:slug" element={<CaseStudy />} />
-        <Route path="/v2/writing/:slug" element={<V2Writing />} />
-        <Route path="/v2/writing" element={<V2Writing />} />
-        <Route path="/v2/*" element={<PortfolioV2 />} />
+        {/* Temporary legacy fallback while V2 settles as the canonical site */}
+        <Route path="/v1" element={<LegacyPortfolio />} />
 
-        {/* Blog Routes */}
-        <Route path="/blog" element={<BlogLayout theme={theme} setTheme={setTheme} />}>
-          <Route index element={<BlogIndex />} />
-          <Route path=":slug" element={<BlogPost />} />
-        </Route>
+        {/* Backward-compatible URLs */}
+        <Route path="/v2/*" element={<CompatibilityRedirect from="/v2" to="" />} />
+        <Route path="/blog/*" element={<CompatibilityRedirect from="/blog" to="/writing" />} />
 
-        {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-
-      {!isV2 && (
-        <TweaksPanel
-          open={tweaksOpen} setOpen={setTweaksOpen}
-          theme={theme} setTheme={setTheme}
-          accent={accent} setAccent={setAccent}
-        />
-      )}
     </BrowserRouter>
   )
 }
