@@ -257,6 +257,12 @@ export default function CaseStudy() {
         <title>{data.title.join(' ')} — Unik Dahal</title>
         <meta name="description" content={data.summary} />
         <meta name="theme-color" content={theme === 'dark' ? '#101521' : '#f4f6fa'} />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={data.title.join(' ') + ' — Unik Dahal'} />
+        <meta property="og:description" content={data.summary} />
+        <meta property="og:url" content={'https://www.unikdahal.com.np/v2/work/' + slug} />
+        <meta name="twitter:card" content="summary" />
+        <link rel="canonical" href={'https://www.unikdahal.com.np/v2/work/' + slug} />
       </Helmet>
 
       <header className="v2-case-nav">
