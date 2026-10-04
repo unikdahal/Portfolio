@@ -496,7 +496,7 @@ function WritingSection() {
             <p>
               I write when implementing something forces me to understand the layer underneath it.
             </p>
-            <a className="v2-inline-link" href="/blog">
+            <a className="v2-inline-link" href="/v2/writing">
               All writing
               <ArrowIcon />
             </a>
@@ -800,7 +800,7 @@ export default function PortfolioV2() {
             <div>
               <a href={GITHUB} target="_blank" rel="noreferrer">GitHub</a>
               <a href={LINKEDIN} target="_blank" rel="noreferrer">LinkedIn</a>
-              <a href="/blog">Writing</a>
+              <a href="/v2/writing">Writing</a>
               <a href="/">V1</a>
             </div>
           </div>
