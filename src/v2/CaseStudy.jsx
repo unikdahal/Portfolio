@@ -249,7 +249,7 @@ export default function CaseStudy() {
     window.scrollTo(0, 0)
   }, [slug])
 
-  if (!data) return <Navigate to="/v2/" replace />
+  if (!data) return <Navigate to="/" replace />
 
   return (
     <main className="v2-shell v2-case" data-v2-theme={theme}>
