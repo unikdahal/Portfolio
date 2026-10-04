@@ -626,7 +626,7 @@ export default function PortfolioV2() {
   }, [])
 
   return (
-    <main className="v2-shell" data-v2-theme={theme}>
+    <main className="v2-shell" data-v2-theme={theme} id="v2-top">
       <Helmet>
         <title>Unik Dahal — Data Infrastructure & Distributed Systems</title>
         <meta
@@ -634,6 +634,15 @@ export default function PortfolioV2() {
           content="Unik Dahal builds data infrastructure, query execution systems, and distributed backends across Spark, Iceberg, Arrow, and Apache open source."
         />
         <meta name="theme-color" content={theme === 'dark' ? '#101521' : '#f4f6fa'} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Unik Dahal — Data Infrastructure & Distributed Systems" />
+        <meta
+          property="og:description"
+          content="Production data infrastructure, native query execution, Apache open source, and systems built from first principles."
+        />
+        <meta property="og:url" content="https://www.unikdahal.com.np/v2/" />
+        <meta name="twitter:card" content="summary" />
+        <link rel="canonical" href="https://www.unikdahal.com.np/v2/" />
       </Helmet>
 
       <section className="v2-hero">
@@ -656,6 +665,7 @@ export default function PortfolioV2() {
               type="button"
               onClick={() => setTheme((value) => value === 'dark' ? 'light' : 'dark')}
               aria-label={'Switch to ' + (theme === 'dark' ? 'light' : 'dark') + ' mode'}
+              title={'Switch to ' + (theme === 'dark' ? 'light' : 'dark') + ' mode'}
             >
               <ThemeIcon theme={theme} />
             </button>
