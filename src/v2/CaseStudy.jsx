@@ -260,21 +260,21 @@ export default function CaseStudy() {
         <meta property="og:type" content="article" />
         <meta property="og:title" content={data.title.join(' ') + ' — Unik Dahal'} />
         <meta property="og:description" content={data.summary} />
-        <meta property="og:url" content={'https://www.unikdahal.com.np/v2/work/' + slug} />
+        <meta property="og:url" content={'https://www.unikdahal.com.np/work/' + slug} />
         <meta name="twitter:card" content="summary" />
-        <link rel="canonical" href={'https://www.unikdahal.com.np/v2/work/' + slug} />
+        <link rel="canonical" href={'https://www.unikdahal.com.np/work/' + slug} />
       </Helmet>
 
       <header className="v2-case-nav">
-        <a className="v2-brand" href="/v2/" aria-label="Back to portfolio">
+        <a className="v2-brand" href="/" aria-label="Back to portfolio">
           <span className="v2-brand-mark">u.</span>
           <span>Unik Dahal</span>
         </a>
 
         <div className="v2-case-nav-right">
-          <a href="/v2/#work">All work</a>
-          <a href="/v2/#open-source">Open source</a>
-          <a href="/v2/#writing">Writing</a>
+          <a href="/#work">All work</a>
+          <a href="/#open-source">Open source</a>
+          <a href="/#writing">Writing</a>
           <button
             className="v2-theme-toggle"
             type="button"
@@ -367,11 +367,11 @@ export default function CaseStudy() {
 
       <footer className="v2-case-footer">
         <div className="v2-container">
-          <a href="/v2/">
+          <a href="/">
             <span>Back to portfolio</span>
             <strong>Selected work</strong>
           </a>
-          <a href={'/v2/work/' + data.next}>
+          <a href={'/work/' + data.next}>
             <span>Next case study</span>
             <strong>{CASES[data.next].eyebrow}</strong>
             <ArrowIcon />
