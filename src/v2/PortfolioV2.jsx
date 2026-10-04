@@ -345,7 +345,7 @@ function SagaVisual() {
   )
 }
 
-function WorkCard({ index, eyebrow, title, accent, description, metrics, tags, children, className = '' }) {
+function WorkCard({ index, eyebrow, title, accent, description, metrics, tags, href, children, className = '' }) {
   return (
     <article className={'v2-work-card v2-reveal ' + className}>
       <div className="v2-work-card-head">
@@ -367,6 +367,11 @@ function WorkCard({ index, eyebrow, title, accent, description, metrics, tags, c
           <div className="v2-work-tags">
             {tags.map((tag) => <span key={tag}>{tag}</span>)}
           </div>
+
+          <a className="v2-work-read" href={href}>
+            Read the case study
+            <ArrowIcon />
+          </a>
         </div>
 
         <div className="v2-work-side">
@@ -731,6 +736,7 @@ export default function PortfolioV2() {
                 { value: '~15×', label: 'less transport overhead' },
               ]}
               tags={['Arrow Flight SQL', 'ADBC', 'Apache Spark', 'Kyuubi']}
+              href="/v2/work/query-path"
             >
               <QueryVisual />
             </WorkCard>
@@ -746,6 +752,7 @@ export default function PortfolioV2() {
                 { value: '~90%', label: 'compute reduction' },
               ]}
               tags={['Apache Spark', 'Apache Iceberg', 'Polaris', 'Snowflake']}
+              href="/v2/work/lakehouse-migration"
               className="v2-work-card-migration"
             >
               <MigrationVisual />
@@ -762,6 +769,7 @@ export default function PortfolioV2() {
                 { value: '~70%', label: 'fewer related incidents' },
               ]}
               tags={['Saga', 'Kafka', 'Spring', 'Object storage']}
+              href="/v2/work/saga-orchestration"
               className="v2-work-card-saga"
             >
               <SagaVisual />
