@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Navigate, useParams } from 'react-router-dom'
 import './v2.css'
+import './caseStudy.css'
 
 const CASES = {
   'query-path': {
