@@ -81,7 +81,7 @@ const WRITING_SERIES = {
     title: 'How Redis Talks: The RESP Protocol',
     excerpt: 'A byte-level look at the wire format behind Redis clients, pipelining, and streaming-safe parsing.',
     meta: '13 min read · Systems',
-    href: '/blog/001-resp-protocol',
+    href: '/v2/writing/001-resp-protocol',
   },
   upcoming: [
     ['02', 'The Single-Threaded Myth: Redis Event Loop & Netty'],
